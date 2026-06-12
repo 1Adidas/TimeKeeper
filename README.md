@@ -17,7 +17,7 @@ Một ứng dụng web gọn nhẹ, trực quan và hiện đại giúp người
 *   Cập nhật thu nhập tức thì ngay khi kết thúc ca làm.
 
 ### 3. Hệ Thống Thưởng / Phạt & Quản Lý Chi Tiêu
-*   **Thu nhập thêm / Thưởng:** Ghi nhận tiền thưởng từ các hoạt động như ship nước, doanh số, hỗ trợ... kèm ngày giờ và nội dung chi tiết.
+*   **Thu nhập thêm / Thưởng:** Ghi nhận tiền thưởng từ các hoạt động ngoài ca làm chính như ship nước, hỗ trợ công việc, hoặc thưởng khi mua bánh/các sản phẩm của tiệm theo quy định (ví dụ: mua bánh thưởng thêm 12.000đ, GO thưởng 12.000đ, CHB thưởng 8.000đ).
 
 ### 4. Hệ Thống Đánh Giá Tích Cực (Tick System)
 *   Cho phép đánh giá chất lượng ca làm việc bằng hệ thống Tick:
@@ -26,8 +26,8 @@ Một ứng dụng web gọn nhẹ, trực quan và hiện đại giúp người
 *   Hiển thị tiến trình (milestones) trực quan giúp người dùng theo dõi và cố gắng trong công việc.
 
 ### 5. Thống Kê & Lịch Sử Chi Tiết
-*   **Lịch sử gộp thông minh:** Nhóm toàn bộ ca làm, khoản thưởng, chi phí mua sắm và các đánh giá Tick theo từng ngày cụ thể để dễ dàng quản lý.
-*   **Bộ lọc & Thống kê:** Xem chi tiết thu nhập, tiền thưởng thêm, tiền chi tiêu và tổng thu nhập thực tế theo ngày, tuần, hoặc tháng.
+*   **Lịch sử gộp thông minh:** Nhóm toàn bộ ca làm, khoản thưởng thêm và các đánh giá Tick theo từng ngày cụ thể để dễ dàng quản lý.
+*   **Bộ lọc & Thống kê:** Xem chi tiết thu nhập từ ca làm, tiền thưởng thêm và tổng thu nhập thực tế theo ngày, tuần, hoặc tháng.
 *   **Tính năng thu gọn/mở rộng:** Giúp giao diện lịch sử gọn gàng, có thể xem nhanh hoặc mở rộng để xem chi tiết từng giao dịch.
 
 ---
@@ -70,9 +70,26 @@ Sau đó truy cập trình duyệt theo địa chỉ: `http://127.0.0.1:8081`
     *   Chọn ca tương ứng với khung giờ hiện tại hoặc bấm **Mở rộng** để hiển thị các ca khác. Nhấn **Vào ca**.
     *   Nếu làm ca ngoài giờ, chọn mục **Ca tự do**, nhập giờ bắt đầu/kết thúc và bấm **Vào ca**.
 3.  **Hết ca:** Khi hoàn thành công việc, bấm **Hết ca** để hệ thống tự động cộng tiền và lưu vào lịch sử.
-4.  **Thêm Thưởng/Chi Tiêu:** Sử dụng biểu mẫu nhập để ghi nhận phần thưởng (như ship nước, thưởng doanh số...) hoặc chi tiêu cá nhân (như mua bánh mì) trong ngày.
+4.  **Thêm khoản thưởng thêm:** Sử dụng biểu mẫu nhập để nhanh chóng chọn hoặc ghi nhận phần thưởng (như ship nước, mua bánh thưởng...) phát sinh trong ngày.
 5.  **Theo dõi tiến độ:** Tích chọn chất lượng ca làm (Tốt/Xấu) để tích lũy cột mốc nhận thưởng 100.000đ.
 6.  **Xem báo cáo:** Chuyển qua tab **Lịch sử** & **Thống kê** để xem chi tiết tình hình tài chính của bạn.
+
+---
+
+## 🌐 Triển Khai Lên Vercel (Deployment)
+
+Vì đây là một ứng dụng thuần Frontend (HTML/CSS/JS tĩnh), bạn có thể dễ dàng triển khai (deploy) ứng dụng này lên **Vercel** miễn phí để truy cập từ xa (ví dụ: mở trên điện thoại khi đến quán làm việc) mà không cần bật máy tính ở nhà.
+
+### Cách thực hiện:
+1.  Đẩy toàn bộ mã nguồn của dự án lên một kho lưu trữ trực tuyến (ví dụ: **GitHub**, **GitLab**, hoặc **Bitbucket**).
+2.  Truy cập vào trang quản trị [Vercel Dashboard](https://vercel.com/dashboard).
+3.  Chọn **Add New** -> **Project**.
+4.  Kết nối với tài khoản GitHub của bạn và chọn Repository chứa dự án này.
+5.  Giữ nguyên các thiết lập mặc định (Vercel sẽ tự động nhận diện đây là một trang web tĩnh) và nhấn **Deploy**.
+6.  Chờ vài giây, Vercel sẽ cung cấp cho bạn một đường dẫn dạng `https://ten-du-an.vercel.app` để truy cập ứng dụng mọi lúc mọi nơi.
+
+> [!NOTE]
+> Do ứng dụng lưu trữ dữ liệu thông qua `LocalStorage` của trình duyệt, nếu bạn đổi thiết bị truy cập (ví dụ từ điện thoại sang máy tính), dữ liệu sẽ không tự đồng bộ với nhau. Hãy sử dụng cùng một trình duyệt trên cùng một thiết bị để đảm bảo dữ liệu lịch sử được ghi nhận liên tục.
 
 ---
 

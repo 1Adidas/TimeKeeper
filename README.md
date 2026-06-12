@@ -17,7 +17,7 @@ Một ứng dụng web gọn nhẹ, trực quan và hiện đại giúp người
 *   Cập nhật thu nhập tức thì ngay khi kết thúc ca làm.
 
 ### 3. Hệ Thống Thưởng / Phạt & Quản Lý Chi Tiêu
-*   **Thu nhập thêm / Thưởng:** Ghi nhận tiền thưởng từ các hoạt động ngoài ca làm chính như ship nước, hỗ trợ công việc, hoặc thưởng khi mua bánh/các sản phẩm của tiệm theo quy định (ví dụ: mua bánh thưởng thêm 12.000đ, GO thưởng 12.000đ, CHB thưởng 8.000đ).
+*   **Thu nhập thêm / Thưởng:** Ghi nhận tiền thưởng từ các hoạt động ngoài ca làm chính như ship nước, hỗ trợ công việc, hoặc thưởng khi mua bánh/các sản phẩm của tiệm theo quy định (ví dụ: mua bánh thưởng thêm tiền).
 
 ### 4. Hệ Thống Đánh Giá Tích Cực (Tick System)
 *   Cho phép đánh giá chất lượng ca làm việc bằng hệ thống Tick:

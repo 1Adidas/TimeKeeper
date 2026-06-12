@@ -53,8 +53,9 @@ function init() {
     updateRateDisplay();
     renderHistory();
     updateStats();
-    updatePurchaseUI();
+    updateBonusUI();
     updateTickUI();
+    renderBonusSettings();
 
     // Set hourly rate input
     document.getElementById('hourlyRateInput').value = state.settings.hourlyRate;
@@ -172,12 +173,35 @@ function navigateTo(pageName) {
     if (pageName === 'history') renderHistory();
     if (pageName === 'stats') updateStats();
     if (pageName === 'shifts') renderShifts();
+    if (pageName === 'settings') renderBonusSettings();
 
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ===== CLOCK IN / OUT =====
+function isTimeWithinShift(startStr, endStr) {
+    const now = new Date();
+    const currentMins = now.getHours() * 60 + now.getMinutes();
+    
+    const [sh, sm] = startStr.split(':').map(Number);
+    const [eh, em] = endStr.split(':').map(Number);
+    
+    let startMins = sh * 60 + sm;
+    let endMins = eh * 60 + em;
+    
+    // Cho phép vào ca sớm tối đa 30 phút
+    let allowedStartMins = (startMins - 30 + 1440) % 1440;
+    
+    if (endMins > startMins) {
+        // Ca không qua đêm (ví dụ: 08:00 -> 17:00)
+        return currentMins >= allowedStartMins && currentMins <= endMins;
+    } else {
+        // Ca qua đêm (ví dụ: 22:00 -> 06:00)
+        return currentMins >= allowedStartMins || currentMins <= endMins;
+    }
+}
+
 function clockIn() {
     if (state.currentSession) {
         showToast('Bạn đang trong ca làm rồi!', 'warning');
@@ -193,6 +217,12 @@ function clockIn() {
     if (!state.settings.hourlyRate || state.settings.hourlyRate <= 0) {
         showToast('Vui lòng cài đặt lương theo giờ trước!', 'warning');
         navigateTo('settings');
+        return;
+    }
+
+    // Kiểm tra tính hợp lệ về mặt thời gian (chỉ áp dụng ca cố định, không áp dụng ca tự do)
+    if (!state.selectedShift.isFreestyle && !isTimeWithinShift(state.selectedShift.start, state.selectedShift.end)) {
+        showToast(`Giờ hiện tại không khớp với ${state.selectedShift.name} (${state.selectedShift.start} — ${state.selectedShift.end})!`, 'warning');
         return;
     }
 
@@ -364,24 +394,7 @@ function renderShifts() {
     grid.innerHTML = displayShifts.map(shift => {
         let isHidden = false;
         if (!state.showAllShifts && !shift.isFreestyle) {
-            // Hide if the shift ended before the current time
-            const [eh, em] = shift.end.split(':').map(Number);
-            const endTotalMins = eh * 60 + em;
-            const [sh, sm] = shift.start.split(':').map(Number);
-            const startTotalMins = sh * 60 + sm;
-            
-            // Only apply hiding logic if the shift doesn't cross midnight
-            if (endTotalMins > startTotalMins) {
-                if (currentTotalMins > endTotalMins) {
-                    isHidden = true; // Shift has ended
-                }
-            } else {
-                // Crosses midnight (e.g. 22:00 -> 06:00)
-                // If it's currently > 06:00 and < 22:00, it should be hidden
-                if (currentTotalMins > endTotalMins && currentTotalMins < startTotalMins) {
-                    isHidden = true;
-                }
-            }
+            isHidden = !isTimeWithinShift(shift.start, shift.end);
         }
 
         if (isHidden) return '';
@@ -551,80 +564,106 @@ function renderHistory() {
         return;
     }
 
-    list.innerHTML = items.map((item, index) => {
+    // Group items by date string
+    const grouped = [];
+    let currentDate = '';
+    
+    items.forEach(item => {
         const d = item.dateObj;
-        const day = d.getDate();
-        const month = MONTHS_VI[d.getMonth()];
-        const timeStr = formatTime(d);
-
-        if (item.itemType === 'shift') {
-            const record = item.data;
-            const endDate = new Date(record.endTime);
-            const endTimeStr = formatTime(endDate);
-            const durationStr = formatDurationShort(record.durationMs);
-            return `
-                <div class="history-item" style="animation-delay: ${Math.min(index * 0.05, 0.5)}s">
-                    <div class="history-date-badge">
-                        <span class="history-date-day">${day}</span>
-                        <span class="history-date-month">${month}</span>
-                    </div>
-                    <div class="history-info">
-                        <div class="history-shift-name">${record.shiftEmoji || '📋'} ${record.shiftName}</div>
-                        <div class="history-time-range">${timeStr} → ${endTimeStr}</div>
-                    </div>
-                    <div class="history-right">
-                        <div class="history-duration">${durationStr}</div>
-                        <div class="history-earnings">${formatCurrencyShort(record.earnings)}</div>
-                    </div>
-                    <button class="history-item-delete" onclick="deleteRecord('${record.id}')">✕</button>
-                </div>
-            `;
-        } else if (item.itemType === 'bonus') {
-            const bonus = item.data;
-            const bonusType = state.settings.bonusTypes.find(b => b.id === bonus.typeId) || { name: bonus.store, emoji: bonus.store === 'GO' ? '🏬' : '🍞' };
-            
-            return `
-                <div class="history-item" style="animation-delay: ${Math.min(index * 0.05, 0.5)}s">
-                    <div class="history-date-badge">
-                        <span class="history-date-day">${day}</span>
-                        <span class="history-date-month">${month}</span>
-                    </div>
-                    <div class="history-info" style="flex-direction:row; align-items:center; gap:8px;">
-                        <div style="font-size:1.2rem;">${bonusType.emoji}</div>
-                        <div class="tick-recent-content">
-                            <span style="font-weight:600; color:var(--text-primary); font-size:0.8rem;">Thưởng: ${bonusType.name}</span>
-                            <span>${timeStr}</span>
-                            ${bonus.note ? `<div class="bonus-note">"${bonus.note}"</div>` : ''}
-                        </div>
-                    </div>
-                    <div class="history-right">
-                        <div class="history-earnings" style="color:var(--accent-cyan);">+${formatCurrencyShort(bonus.amount)}</div>
-                    </div>
-                    <button class="history-item-delete" onclick="deletePurchase('${bonus.id}')">✕</button>
-                </div>
-            `;
-        } else if (item.itemType === 'tick') {
-            const tick = item.data;
-            const isGood = tick.type === 'good';
-            
-            return `
-                <div class="history-item" style="animation-delay: ${Math.min(index * 0.05, 0.5)}s">
-                    <div class="history-date-badge">
-                        <span class="history-date-day">${day}</span>
-                        <span class="history-date-month">${month}</span>
-                    </div>
-                    <div class="history-info" style="flex-direction:row; align-items:center; gap:8px;">
-                        <div style="font-size:1.2rem;">${isGood ? '👍' : '👎'}</div>
-                        <div class="tick-recent-content">
-                            <span style="font-weight:600; color:${isGood ? 'var(--accent-green)' : 'var(--accent-red)'}; font-size:0.8rem;">Tick ${isGood ? 'Tốt' : 'Xấu'}</span>
-                            <span>${timeStr}</span>
-                            ${tick.note ? `<div class="tick-note">"${tick.note}"</div>` : ''}
-                        </div>
-                    </div>
-                    <button class="history-item-delete" onclick="deleteTick('${tick.id}')">✕</button>
-                </div>
-            `;
+        const dateKey = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+        
+        if (currentDate !== dateKey) {
+            grouped.push({
+                dateKey: dateKey,
+                dateObj: d,
+                items: []
+            });
+            currentDate = dateKey;
         }
+        grouped[grouped.length - 1].items.push(item);
+    });
+
+    list.innerHTML = grouped.map((group, gIndex) => {
+        const day = group.dateObj.getDate();
+        const month = MONTHS_VI[group.dateObj.getMonth()];
+        const dayName = FULL_WEEKDAYS_VI[group.dateObj.getDay()];
+
+        const itemsHtml = group.items.map((item, index) => {
+            const d = item.dateObj;
+            const timeStr = formatTime(d);
+
+            if (item.itemType === 'shift') {
+                const record = item.data;
+                const endDate = new Date(record.endTime);
+                const endTimeStr = formatTime(endDate);
+                const durationStr = formatDurationShort(record.durationMs);
+                return `
+                    <div class="history-item" style="animation-delay: ${Math.min((gIndex*0.1) + index * 0.05, 0.5)}s; margin-bottom: 8px;">
+                        <div class="history-info" style="margin-left: 0;">
+                            <div class="history-shift-name">${record.shiftEmoji || '📋'} ${record.shiftName}</div>
+                            <div class="history-time-range">${timeStr} → ${endTimeStr}</div>
+                        </div>
+                        <div class="history-right">
+                            <div class="history-duration">${durationStr}</div>
+                            <div class="history-earnings">${formatCurrencyShort(record.earnings)}</div>
+                        </div>
+                        <button class="history-item-delete" onclick="deleteRecord('${record.id}')">✕</button>
+                    </div>
+                `;
+            } else if (item.itemType === 'bonus') {
+                const bonus = item.data;
+                const bonusType = state.settings.bonusTypes.find(b => b.id === bonus.typeId) || { name: bonus.store, emoji: bonus.store === 'GO' ? '🏬' : '🍞' };
+                return `
+                    <div class="history-item" style="animation-delay: ${Math.min((gIndex*0.1) + index * 0.05, 0.5)}s; margin-bottom: 8px;">
+                        <div class="history-info" style="margin-left: 0; flex-direction:row; align-items:center; gap:8px;">
+                            <div style="font-size:1.2rem;">${bonusType.emoji}</div>
+                            <div class="tick-recent-content">
+                                <span style="font-weight:600; color:var(--text-primary); font-size:0.8rem;">Thưởng: ${bonusType.name}</span>
+                                <span>${timeStr}</span>
+                                ${bonus.note ? `<div class="bonus-note">"${bonus.note}"</div>` : ''}
+                            </div>
+                        </div>
+                        <div class="history-right">
+                            <div class="history-earnings" style="color:var(--accent-cyan);">+${formatCurrencyShort(bonus.amount)}</div>
+                        </div>
+                        <button class="history-item-delete" onclick="deletePurchase('${bonus.id}')">✕</button>
+                    </div>
+                `;
+            } else if (item.itemType === 'tick') {
+                const tick = item.data;
+                const isGood = tick.type === 'good';
+                return `
+                    <div class="history-item" style="animation-delay: ${Math.min((gIndex*0.1) + index * 0.05, 0.5)}s; margin-bottom: 8px;">
+                        <div class="history-info" style="margin-left: 0; flex-direction:row; align-items:center; gap:8px;">
+                            <div style="font-size:1.2rem;">${isGood ? '👍' : '👎'}</div>
+                            <div class="tick-recent-content">
+                                <span style="font-weight:600; color:${isGood ? 'var(--accent-green)' : 'var(--accent-red)'}; font-size:0.8rem;">Tick ${isGood ? 'Tốt' : 'Xấu'}</span>
+                                <span>${timeStr}</span>
+                                ${tick.note ? `<div class="tick-note">"${tick.note}"</div>` : ''}
+                            </div>
+                        </div>
+                        <button class="history-item-delete" onclick="deleteTick('${tick.id}')">✕</button>
+                    </div>
+                `;
+            }
+        }).join('');
+
+        return `
+            <div class="history-day-group" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 16px; padding: 15px; margin-bottom: 16px; animation: slideUp 0.3s ease forwards;">
+                <div class="history-day-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-bottom: 12px;">
+                    <div style="display:flex; align-items:center; gap: 10px;">
+                        <div style="background:var(--accent-purple); color:#fff; font-weight:700; width:40px; height:40px; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1;">
+                            <span style="font-size:1.1rem;">${day}</span>
+                            <span style="font-size:0.6rem; opacity:0.8; text-transform:uppercase;">${month}</span>
+                        </div>
+                        <span style="font-weight:600; color:var(--text-primary); font-size: 0.95rem;">${dayName}</span>
+                    </div>
+                </div>
+                <div class="history-day-items">
+                    ${itemsHtml}
+                </div>
+            </div>
+        `;
     }).join('');
 }
 
@@ -744,9 +783,13 @@ function updateStats() {
     const periodStart = getPeriodStartDate(state.statsPeriod);
     const periodPurchases = state.purchases.filter(p => new Date(p.date) >= periodStart);
     const periodTicks = state.ticks.filter(t => new Date(t.date) >= periodStart);
+    
+    const tickMilestones = getTickMilestones();
+    const periodMilestones = tickMilestones.filter(m => new Date(m.date) >= periodStart);
+    
     const purchaseTotal = periodPurchases.reduce((sum, p) => sum + p.amount, 0);
-    const tickCalc = calculateTickBonuses(periodTicks);
-    const grandTotal = totalEarnings + purchaseTotal + tickCalc.net;
+    const tickNet = periodMilestones.reduce((sum, m) => sum + m.amount, 0);
+    const grandTotal = totalEarnings + purchaseTotal + tickNet;
 
     // Stats values
     document.getElementById('statsTotalEarnings').textContent = formatCurrency(grandTotal);
@@ -756,8 +799,8 @@ function updateStats() {
     
     const tickNetEl = document.getElementById('statsTickNet');
     if (tickNetEl) {
-        tickNetEl.textContent = (tickCalc.net >= 0 ? '+' : '') + formatCurrencyShort(tickCalc.net);
-        tickNetEl.style.color = tickCalc.net >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+        tickNetEl.textContent = (tickNet >= 0 ? '+' : '') + formatCurrencyShort(tickNet);
+        tickNetEl.style.color = tickNet >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
     }
 
     // Calculate averages
@@ -772,7 +815,7 @@ function updateStats() {
     renderChart(records);
 
     // Breakdown
-    renderBreakdown(records);
+    renderBreakdown(records, periodPurchases, periodTicks, periodMilestones);
 }
 
 function getRecordsForPeriod(period) {
@@ -946,27 +989,83 @@ function renderChart(records) {
     });
 }
 
-function renderBreakdown(records) {
+function renderBreakdown(records, purchases, ticks, tickMilestones) {
     const list = document.getElementById('breakdownList');
     if (!list) return;
 
     // Group by date
     const daily = {};
+
+    function initDay(key, date) {
+        if (!daily[key]) {
+            daily[key] = {
+                date: date,
+                shiftEarnings: 0,
+                bonusEarnings: 0,
+                hours: 0,
+                shifts: 0,
+                bonuses: [],
+                ticks: []
+            };
+        }
+    }
+
+    // 1. Group shift records
     records.forEach(r => {
         const d = new Date(r.startTime);
         const key = d.toLocaleDateString('vi-VN');
-        if (!daily[key]) {
-            daily[key] = {
-                date: d,
-                earnings: 0,
-                hours: 0,
-                shifts: 0
-            };
-        }
-        daily[key].earnings += r.earnings;
+        initDay(key, d);
+        daily[key].shiftEarnings += r.earnings;
         daily[key].hours += r.durationHours;
         daily[key].shifts++;
     });
+
+    // 2. Group purchases (bonuses)
+    if (purchases) {
+        purchases.forEach(p => {
+            const d = new Date(p.date);
+            const key = d.toLocaleDateString('vi-VN');
+            initDay(key, d);
+            daily[key].bonusEarnings += p.amount;
+            
+            // Find bonus type name/emoji
+            const bType = state.settings.bonusTypes?.find(b => b.id === p.typeId) || { emoji: '🎁', name: p.store };
+            daily[key].bonuses.push({
+                name: bType.name,
+                emoji: bType.emoji,
+                amount: p.amount
+            });
+        });
+    }
+
+    // 3. Group tick milestones
+    if (tickMilestones) {
+        tickMilestones.forEach(m => {
+            const d = new Date(m.date);
+            const key = d.toLocaleDateString('vi-VN');
+            initDay(key, d);
+            daily[key].bonusEarnings += m.amount;
+            daily[key].bonuses.push({
+                name: m.name,
+                emoji: m.emoji,
+                amount: m.amount
+            });
+        });
+    }
+
+    // 4. Group ticks
+    if (ticks) {
+        ticks.forEach(t => {
+            const d = new Date(t.date);
+            const key = d.toLocaleDateString('vi-VN');
+            initDay(key, d);
+            daily[key].ticks.push({
+                type: t.type,
+                note: t.note,
+                time: formatTime(d)
+            });
+        });
+    }
 
     const entries = Object.values(daily).sort((a, b) => b.date - a.date);
 
@@ -980,20 +1079,45 @@ function renderBreakdown(records) {
         return;
     }
 
-    const maxEarnings = Math.max(...entries.map(e => e.earnings), 1);
+    // Max daily total (shift + bonus) for the bar scale
+    const maxTotal = Math.max(...entries.map(e => e.shiftEarnings + e.bonusEarnings), 1);
 
     list.innerHTML = entries.map(entry => {
         const dayName = WEEKDAYS_VI[entry.date.getDay()];
         const dateStr = `${entry.date.getDate()}/${entry.date.getMonth() + 1}`;
-        const barWidth = (entry.earnings / maxEarnings) * 100;
+        const totalDayEarnings = entry.shiftEarnings + entry.bonusEarnings;
+        const barWidth = Math.max(0, (totalDayEarnings / maxTotal) * 100);
+
+        // Render bonus tags/badges for this day
+        let tagsHtml = '';
+        if (entry.bonuses.length > 0 || entry.ticks.length > 0) {
+            tagsHtml += entry.bonuses.map(b => 
+                `<span class="breakdown-bonus-badge" style="padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; background: ${b.amount >= 0 ? 'rgba(6, 182, 212, 0.12)' : 'rgba(239, 68, 68, 0.12)'}; color: ${b.amount >= 0 ? 'var(--accent-cyan)' : 'var(--accent-red)'}; border: 1px solid ${b.amount >= 0 ? 'rgba(6, 182, 212, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; display: inline-flex; align-items: center; gap: 4px; margin-right: 4px; margin-bottom: 4px;">${b.emoji} ${b.name} (${b.amount >= 0 ? '+' : ''}${formatCurrencyShort(b.amount)})</span>`
+            ).join('');
+            
+            tagsHtml += entry.ticks.map(t =>
+                `<span class="breakdown-tick-badge" style="padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; background: ${t.type === 'good' ? 'rgba(34, 197, 94, 0.12)' : 'rgba(239, 68, 68, 0.12)'}; color: ${t.type === 'good' ? 'var(--accent-green)' : 'var(--accent-red)'}; border: 1px solid ${t.type === 'good' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; display: inline-flex; align-items: center; gap: 4px; margin-right: 4px; margin-bottom: 4px;">${t.type === 'good' ? '👍' : '👎'} Tick ${t.type === 'good' ? 'tốt' : 'xấu'}${t.note ? `: ${t.note}` : ''}</span>`
+            ).join('');
+        } else {
+            tagsHtml = `<span class="breakdown-bonus-badge none" style="padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; background: rgba(255, 255, 255, 0.04); color: var(--text-muted); border: 1px solid rgba(255, 255, 255, 0.08); display: inline-flex; align-items: center; gap: 4px; margin-right: 4px; margin-bottom: 4px;">Không có hoạt động khác</span>`;
+        }
 
         return `
-            <div class="breakdown-item">
-                <span class="breakdown-day">${dayName} ${dateStr}</span>
-                <div class="breakdown-bar-container">
-                    <div class="breakdown-bar" style="width: ${barWidth}%"></div>
+            <div class="breakdown-item-v2" style="display:flex; flex-direction:column; gap:6px; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--border-glass); margin-bottom: 8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span class="breakdown-day" style="font-weight:600; color:var(--text-primary); font-size:0.85rem;">${dayName} ${dateStr}</span>
+                    <span class="breakdown-amount" style="font-weight:700; color:${totalDayEarnings >= 0 ? 'var(--accent-cyan)' : 'var(--accent-red)'}; font-size:0.85rem;">${formatCurrencyShort(totalDayEarnings)}</span>
                 </div>
-                <span class="breakdown-amount">${formatCurrencyShort(entry.earnings)}</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; color:var(--text-secondary);">
+                    <span>Ca làm: ${formatCurrencyShort(entry.shiftEarnings)} (${entry.hours.toFixed(1)}h)</span>
+                    <span>Thưởng/Phạt: ${(entry.bonusEarnings >= 0 && entry.bonusEarnings !== 0 ? '+' : '')}${formatCurrencyShort(entry.bonusEarnings)}</span>
+                </div>
+                <div class="breakdown-bar-container" style="height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;">
+                    <div class="breakdown-bar" style="width: ${barWidth}%; height:100%; background:linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); border-radius:2px;"></div>
+                </div>
+                <div class="breakdown-bonuses-list" style="display:flex; flex-wrap:wrap; margin-top:2px;">
+                    ${tagsHtml}
+                </div>
             </div>
         `;
     }).join('');
@@ -1208,6 +1332,25 @@ function formatTime(date) {
     return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
+function formatRelativeDate(dateStr) {
+    const d = new Date(dateStr);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    const timeStr = formatTime(d);
+
+    if (d.toDateString() === today.toDateString()) {
+        return `Hôm nay lúc ${timeStr}`;
+    } else if (d.toDateString() === yesterday.toDateString()) {
+        return `Hôm qua lúc ${timeStr}`;
+    } else {
+        const day = d.getDate();
+        const month = d.getMonth() + 1;
+        return `${day}/${month} lúc ${timeStr}`;
+    }
+}
+
 function formatDurationShort(ms) {
     const totalMin = Math.floor(ms / 60000);
     const hours = Math.floor(totalMin / 60);
@@ -1296,16 +1439,16 @@ function updateBonusUI() {
     const totalEl = document.getElementById('bonusTodayTotal');
     if (totalEl) totalEl.textContent = formatCurrency(totalToday);
 
-    // Render recent bonuses (last 5)
+    // Render recent bonuses (last 5 overall, displaying dates clearly)
     const recentList = document.getElementById('bonusRecentList');
     if (recentList) {
-        const recent = todayBonuses.slice(0, 5);
+        const recent = state.purchases.slice(0, 5);
         if (recent.length === 0) {
             recentList.innerHTML = '';
             return;
         }
         recentList.innerHTML = recent.map(p => {
-            const time = formatTime(new Date(p.date));
+            const dateText = formatRelativeDate(p.date);
             const bType = state.settings.bonusTypes?.find(b => b.id === p.typeId) || { emoji: '🎁', name: p.store };
             return `
                 <div class="purchase-recent-item">
@@ -1314,7 +1457,7 @@ function updateBonusUI() {
                             <span>${bType.emoji}</span>
                             <span class="purchase-recent-store">${bType.name}</span>
                             <span style="opacity:0.5">•</span>
-                            <span>${time}</span>
+                            <span>${dateText}</span>
                         </div>
                         ${p.note ? `<div class="bonus-note">"${p.note}"</div>` : ''}
                     </div>
@@ -1370,6 +1513,40 @@ function deleteTick(tickId) {
     updateStats();
     if (state.currentPage === 'history') renderHistory();
     showToast('Đã xóa tick', 'info');
+}
+
+function getTickMilestones() {
+    const sorted = [...state.ticks].sort((a, b) => new Date(a.date) - new Date(b.date));
+    let goodCount = 0;
+    let badCount = 0;
+    const milestones = [];
+    
+    sorted.forEach(t => {
+        if (t.type === 'good') {
+            goodCount++;
+            if (goodCount % TICKS_PER_BONUS === 0) {
+                milestones.push({
+                    id: `tick-bonus-${t.id}`,
+                    date: t.date,
+                    amount: TICK_BONUS_AMOUNT,
+                    name: `Thưởng ${TICKS_PER_BONUS} Tick Tốt`,
+                    emoji: '🎉'
+                });
+            }
+        } else if (t.type === 'bad') {
+            badCount++;
+            if (badCount % TICKS_PER_BONUS === 0) {
+                milestones.push({
+                    id: `tick-penalty-${t.id}`,
+                    date: t.date,
+                    amount: -TICK_BONUS_AMOUNT,
+                    name: `Phạt ${TICKS_PER_BONUS} Tick Xấu`,
+                    emoji: '😔'
+                });
+            }
+        }
+    });
+    return milestones;
 }
 
 function calculateTickBonuses(ticks) {

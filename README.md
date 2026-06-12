@@ -18,7 +18,6 @@ Một ứng dụng web gọn nhẹ, trực quan và hiện đại giúp người
 
 ### 3. Hệ Thống Thưởng / Phạt & Quản Lý Chi Tiêu
 *   **Thu nhập thêm / Thưởng:** Ghi nhận tiền thưởng từ các hoạt động như ship nước, doanh số, hỗ trợ... kèm ngày giờ và nội dung chi tiết.
-*   **Chi tiêu / Mua sắm tại chỗ:** Ghi lại các chi phí phát sinh khi làm việc (ví dụ: mua bánh mì, nước uống) để trừ trực tiếp vào tổng thu nhập.
 
 ### 4. Hệ Thống Đánh Giá Tích Cực (Tick System)
 *   Cho phép đánh giá chất lượng ca làm việc bằng hệ thống Tick:

@@ -394,7 +394,7 @@ function clockIn() {
     updateHomeUI();
     showToast('Đã vào ca thành công!', 'success');
 
-    state.lastNotificationUpdate = 0; // Reset notification update timer to trigger immediately
+    state.lastNotificationUpdate = now.getTime(); // Schedule the first silent progress notification after 60 seconds of work
     if (state.settings.notificationsEnabled) {
         const msg = getRandomItem(WELCOME_MESSAGES);
         sendBrowserNotification(

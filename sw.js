@@ -9,11 +9,16 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     
-    // Focus or open the web app window on notification click
+    // If user clicked the custom action button ('close'), do not open/focus the app
+    if (event.action === 'close') {
+        return;
+    }
+    
+    // Focus or open the web app window on notification body click
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
             for (const client of clientList) {
-                if ('focus' in client) {
+                if (client.url.includes(self.location.origin) && 'focus' in client) {
                     return client.focus();
                 }
             }

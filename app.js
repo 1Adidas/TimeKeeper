@@ -26,6 +26,143 @@ const WEEKDAYS_VI = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 const MONTHS_VI = ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'];
 const FULL_WEEKDAYS_VI = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
 
+// ===== COMPANION DIALOGUES =====
+const WELCOME_MESSAGES = [
+    "Chúc bạn một ca làm việc suôn sẻ nhé! Cố lên nào! 💪",
+    "Vào ca rồi nè! Chúc bạn làm việc nhẹ nhàng, khách thương nha! 🌅",
+    "Mọi chuyện hôm nay sẽ tốt đẹp thôi, cùng nhau cố gắng nha! ✨",
+    "Bắt đầu ca làm thôi! Chúc bạn ngập trạng năng lượng tích cực! 🔥",
+    "Hôm nay hãy làm việc thật vui vẻ nhé, tớ luôn đồng hành cùng bạn! 🥰",
+    "Ca này sẽ trôi qua nhanh thôi, chúc bạn làm việc thoải mái nha! 🍀",
+    "Fighting! Một ca làm việc đầy hiệu quả và nhiều niềm vui nhé! ✌️",
+    "Cửa hàng mở cửa rồi, chúc bạn đón những vị khách dễ mến đầu tiên! 🏬",
+    "Chúc bạn làm việc thật tập trung và không bị mệt mỏi nha! 🧠",
+    "Ca làm mới bắt đầu, hãy nở một nụ cười thật tươi nào! 😊",
+    "Chúc bạn một ngày làm việc hanh thông, không gặp rắc rối gì nha! 🌈",
+    "Bắt đầu ca thôi! Đừng quên uống nước đầy đủ trong ca làm nhé! 💧",
+    "Hôm nay làm việc vui vẻ nha, tớ sẽ canh giờ thật chuẩn cho bạn! ⏱️",
+    "Chúc bạn làm việc thật thoải mái, thời gian sẽ trôi nhanh thôi! ⏳",
+    "Bắt đầu chiến đấu thôi! Chúc ca làm việc nhiều may mắn! 🌟",
+    "Vào ca an lành! Chúc bạn có một ngày làm việc thật trọn vẹn! ❤️",
+    "Ca này chúc bạn hoàn thành xuất sắc mọi công việc nha! 🎯",
+    "Cố gắng lên nhé! Tớ tin hôm nay bạn sẽ làm việc rất tốt! 👍",
+    "Khởi đầu ca làm tràn đầy hứng khởi nào bạn ơi! 🚀",
+    "Chúc bạn có một ca làm việc thật nhiều tiếng cười và ít áp lực! 🍃",
+    "Vào ca rồi, chúc bạn gặp những người đồng nghiệp dễ thương hôm nay! 🤝",
+    "Chúc ca làm việc hôm nay nhẹ nhàng như một cơn gió mát! 🌬️",
+    "Ca làm việc mới, cơ hội mới, chúc bạn làm việc thật vui! ☀️",
+    "Vào ca thôi! Cứ bình tĩnh làm việc, mọi thứ sẽ ổn thôi nha! 🧘",
+    "Chúc bạn có một ca làm việc ngập tràn niềm vui và động lực! 🎈",
+    "Chiến thôi bạn ơi! Chúc bạn có một phiên làm việc thật năng suất! 💎",
+    "Bắt đầu ca làm, chúc bạn luôn giữ được sự tỉnh táo và tươi vui! ☕",
+    "Hãy làm việc thật tốt hôm nay nhé, tớ đợi bạn hoàn thành ca! 🙆",
+    "Vào ca suôn sẻ! Chúc bạn có một ngày làm việc thật ý nghĩa! 🌸",
+    "Chúc bạn làm việc vui vẻ, không bị stress và luôn giữ nụ cười nhé! 🌻"
+];
+
+const WARNING_MESSAGES = [
+    "Chỉ còn 30 phút nữa thôi! Cố lên nhé, sắp được về rồi! 😭",
+    "Mỏi nhừ người rồi đúng không? Cố gắng nốt một chút xíu nữa thôi nha! 💪",
+    "Sắp hết ca rồi! Hít một hơi thật sâu và chuẩn bị dọn dẹp thôi! 🧹",
+    "30 phút cuối cùng! Tớ biết bạn đã rất mỏi, cố gắng lên nhé! ❤️",
+    "Sắp được nghỉ ngơi rồi! Cố gắng giữ năng lượng nốt nửa tiếng nha! ⚡",
+    "Nửa giờ nữa thôi là kết thúc ca làm vất vả rồi, cố lên bạn ơi! 🏁",
+    "Chân mỏi mệt rồi phải không? Ngồi nghỉ một chút rồi chiến nốt nha! 🪑",
+    "Ca làm sắp khép lại rồi, hôm nay bạn đã làm rất tốt, cố lên nốt nhé! 🌟",
+    "30 phút nữa thôi là được tự do rồi! Cố lên nào chiến binh! 🛡️",
+    "Cố gắng nốt chút thời gian cuối này nha, sắp được ăn tối/nghỉ ngơi rồi! 🍽️",
+    "Thời gian sắp hết rồi, chuẩn bị bàn giao và ra ca thôi nào! 📋",
+    "Sắp về nhà rồi! Cố lên nốt 30 phút cuối cùng này nhé! 🏡",
+    "Đừng nản lòng nhé, chỉ còn một chút thời gian ngắn ngủi nữa thôi! 🙌",
+    "Tớ biết hôm nay rất mệt, nhưng sắp hoàn thành rồi, cố lên nha! 🥺",
+    "30 phút nữa thôi! Chuẩn bị tinh thần đón nhận thời gian nghỉ ngơi nào! 🎉",
+    "Hít thở thật sâu nào! Sắp được đặt lưng xuống giường nghỉ rồi! 🛌",
+    "Nửa tiếng nữa thôi! Cố gắng duy trì sự tập trung nốt chút nhé! 🎯",
+    "Sắp kết thúc một ngày làm việc dài rồi, cố lên bạn của tớ ơi! 🫂",
+    "Chỉ 30 phút nữa là bạn có thể thở phào nhẹ nhõm rồi! 💨",
+    "Sắp xong rồi! Cảm ơn bạn đã kiên trì suốt cả ca làm việc này! 🙏",
+    "Cố lên nốt nha! Quãng đường vất vả nhất hôm nay sắp qua rồi! 🌈",
+    "Còn 30 phút nữa thôi! Tự thưởng cho mình một chút niềm vui sắp tới nhé! 🍭",
+    "Sắp hết ca rồi, kiểm tra lại đồ đạc và chuẩn bị ra ca thôi nha! 🎒",
+    "Còn chút xíu nữa thôi, cố gắng làm nốt để về nghỉ ngơi trọn vẹn nào! 🔋",
+    "Cố lên bạn ơi, 30 phút cuối trôi nhanh như một cái chớp mắt thôi! 👁️",
+    "Bạn đã làm việc cực kỳ chăm chỉ hôm nay rồi, cố lên nốt nửa tiếng nha! 💎",
+    "Sắp kết thúc ca rồi! Nghĩ đến lúc được nghỉ ngơi để lấy động lực nhé! 🛌",
+    "Chỉ còn 30 phút nữa thôi! Cùng đếm ngược thời gian để ra ca nào! ⏰",
+    "Nửa giờ cuối cùng! Hãy hoàn thành công việc thật trọn vẹn nha! 🚀",
+    "Cố lên nhé! Sắp được cởi bỏ đồng phục và về nhà thư giãn rồi! 👕"
+];
+
+const SUMMARY_MESSAGES = [
+    "Hôm nay bạn đã làm việc cực kỳ vất vả và chăm chỉ rồi. Về nghỉ ngơi thôi! 🎉",
+    "Cảm ơn bạn vì sự nỗ lực tuyệt vời hôm nay! Về nhà ăn thật ngon nhé! 🥰",
+    "Bạn đã cố gắng hết sức rồi! Bây giờ hãy tắm rửa và đi ngủ sớm nha! 💤",
+    "🏁 Hết ca rồi! Hãy cất hết mọi bộn bề công việc và tận hưởng buổi tối nhé! 🏡",
+    "Bạn hôm nay thật tuyệt vời! Cảm ơn vì đã kiên trì hoàn thành ca làm! 👏",
+    "Hãy tự hào vì hôm nay bạn đã làm việc rất chăm chỉ, về nghỉ ngơi nhé! 💖",
+    "Ca làm kết thúc rồi! Về nhà uống một cốc nước mát và thư giãn thôi! 🥤",
+    "Bạn xứng đáng được nghỉ ngơi sau một ca làm việc dài vất vả như vậy! 🛌",
+    "Cảm ơn bạn đã luôn nỗ lực hết mình! Hãy có một giấc ngủ thật ngon nhé! 😴",
+    "Tuyệt vời quá! Ca làm kết thúc rồi, về ôm người thân hoặc nghỉ ngơi nha! 🫂",
+    "Hôm nay bạn đã mệt lắm rồi. Cảm ơn bạn vì sự tận tụy cống hiến! 🙏",
+    "Hãy tắt app, cất điện thoại và đi ăn món mình thích để hồi sức nhé! 🍲",
+    "Bạn đã vượt qua ca làm việc hôm nay một cách xuất sắc rồi! 🏆",
+    "Về nhà thôi bạn ơi! Chúc bạn có một khoảng thời gian nghỉ ngơi bình yên! 🍃",
+    "Cảm ơn bạn đã vất vả hôm nay! Chúc bạn ngủ thật ngon và mơ đẹp nha! 🌙",
+    "Hôm nay vất vả cho bạn quá rồi, nghỉ ngơi thật tốt để lấy lại năng lượng nhé! 🔋",
+    "Kết thúc ca làm rồi! Chúc bạn có một buổi tối thật thư thái bên gia đình! 🌼",
+    "Hôm nay là một ngày dài vất vả, cảm ơn bạn đã kiên cường vượt qua! 💪",
+    "Về nhà tắm nước ấm cho đỡ mỏi cơ nhé. Bạn làm việc quá tốt rồi! 🛀",
+    "Bạn đã hoàn thành nhiệm vụ xuất sắc! Đi chơi hoặc thư giãn thôi nào! 🎮",
+    "Cảm ơn bạn đã luôn chăm chỉ! Tớ rất tự hào vì sự kiên trì của bạn! ❤️",
+    "Hết ca rồi! Chúc bạn có một giấc ngủ thật êm đềm để xua tan mệt mỏi! ☁️",
+    "Hôm nay mệt rồi, nhớ ăn uống đầy đủ để hồi phục sức khỏe nhé! 🍎",
+    "Bạn đã chiến đấu rất kiên cường hôm nay! Về nghỉ ngơi thôi chiến binh! 🛡️",
+    "Cảm ơn bạn vì một ngày làm việc cống hiến! Về nhà thư giãn đầu óc thôi! 🧠",
+    "Ca làm khép lại rồi! Hãy để cơ thể và tâm trí được nghỉ ngơi hoàn toàn nhé! 🧘",
+    "Hôm nay vất vả rồi! Chúc bạn ăn một bữa thật ngon miệng và ấm cúng! 🍛",
+    "Bạn đã làm việc cực kỳ xuất sắc! Hãy tận hưởng thời gian rảnh rỗi của mình nhé! 🎈",
+    "Cảm ơn bạn vì đã luôn cố gắng hết mình! Hãy ngủ một giấc thật sâu nhé! 🛌",
+    "Hết ca làm rồi! Chúc bạn có những phút giây nghỉ ngơi thật thoải mái! 🍀"
+];
+
+const BUTTON_TEXTS = [
+    "Oki cậu luôn ❤️",
+    "Thương ghê, cám ơn nha 🥰",
+    "Tớ biết rồi, cảm ơn cậu! 😘",
+    "Cố lên cùng tớ nhé! 💪",
+    "Tớ nghe rồi ạ! 🌸",
+    "Yêu thế, cám ơn nha! 💕",
+    "Nghe ấm lòng ghê! 🥺",
+    "Đồng ý luôn nè! 👌",
+    "Tớ biết rồi nhé! 😉",
+    "Cảm ơn cậu nhiều nha! 🌻",
+    "Hihi oki cậu! 😊",
+    "Được nghỉ là vui rồi! 💃",
+    "Cố nốt thui nào! 🚀",
+    "Cảm ơn lời chúc nha! 🌈",
+    "Tớ sẽ cố gắng! 💎",
+    "Ấm áp quá đi! 🥰",
+    "Biết rồi nha bạn hiền! 🤝",
+    "Oki oki cậu! ✌️",
+    "Cậu cũng thế nhé! 🍀",
+    "Tuyệt vời ông mặt trời! ☀️",
+    "Nghe ngọt ngào ghê! 🍬",
+    "Hứa sẽ cố gắng! 🤝",
+    "Cảm động ghê luôn! 🥺❤️",
+    "Chuẩn luôn cậu ơi! 👍",
+    "Tớ nghe đây ạ! 🙆",
+    "Yêu cậu quá đi! 😘💖",
+    "Sắp được về rồi, yay! 🎉",
+    "Cảm ơn cậu tiếp sức! 🔋",
+    "Oki cậu nha! 🎈",
+    "Về thôi về thôi! 🏡"
+];
+
+function getRandomItem(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
 // ===== STATE =====
 let state = {
     shifts: [],
@@ -259,9 +396,10 @@ function clockIn() {
 
     state.lastNotificationUpdate = 0; // Reset notification update timer to trigger immediately
     if (state.settings.notificationsEnabled) {
+        const msg = getRandomItem(WELCOME_MESSAGES);
         sendBrowserNotification(
             `🌅 TimeKeeper - Vào ca vui vẻ!`,
-            `Chúc bạn một ca làm việc thật thuận lợi và tràn đầy năng lượng nhé! Cùng nỗ lực nào! 💪`,
+            msg,
             `shift-welcome`
         );
     }
@@ -348,9 +486,10 @@ function clockOut() {
     }
 
     if (state.settings.notificationsEnabled) {
+        const msg = getRandomItem(SUMMARY_MESSAGES);
         sendBrowserNotification(
             `🏁 Hết ca rồi, về nghỉ ngơi thôi! 🎉`,
-            `Hôm nay bạn đã làm việc cực kỳ vất vả và chăm chỉ rồi. Cảm ơn bạn rất nhiều vì sự nỗ lực tuyệt vời này! Hãy về nhà ăn một bữa thật ngon, tắm rửa và nghỉ ngơi sớm nhé. Bạn xứng đáng được thư giãn! 🥰💤`,
+            msg,
             `shift-summary`
         );
     }
@@ -463,9 +602,10 @@ function updateTimerDisplay() {
         if (timeLeftMs > 0 && timeLeftMs <= 30 * 60 * 1000) {
             state.currentSession.notified30Mins = true;
             saveData(STORAGE_KEYS.CURRENT, state.currentSession);
+            const msg = getRandomItem(WARNING_MESSAGES);
             sendBrowserNotification(
                 `⚠️ Sắp hoàn thành ca rồi, cố lên! 😭`,
-                `Chỉ còn 30 phút nữa là hết ca thôi! Chân tay mỏi nhừ rồi đúng không? Cố gắng nốt một chút nữa thôi nhé, sắp được nghỉ ngơi rồi! 💪❤️`,
+                msg,
                 `shift-warning`
             );
         }
@@ -2297,19 +2437,21 @@ function sendBrowserNotification(title, body, tag = null, silent = false) {
     if (!state.settings.notificationsEnabled) return;
     if (!("Notification" in window)) return;
     
+    const cuteBtnText = getRandomItem(BUTTON_TEXTS);
+
     const options = {
         body: body,
         icon: "/favicon.ico",
         badge: "/favicon.ico",
-        vibrate: silent ? [] : [100, 50, 100],
+        vibrate: silent ? [] : [300, 110, 300],
         silent: silent,
         tag: tag || undefined,
         renotify: (tag && !silent) ? true : false,
-        requireInteraction: (tag === 'shift-progress') ? true : false,
+        requireInteraction: (tag === 'shift-progress' || tag === 'shift-warning' || tag === 'shift-summary') ? true : false,
         actions: [
             {
                 action: 'close',
-                title: 'Oki cậu luôn ❤️'
+                title: cuteBtnText
             }
         ]
     };

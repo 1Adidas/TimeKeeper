@@ -403,15 +403,6 @@ function clockIn() {
     startTimer();
     updateHomeUI();
     showToast('Đã vào ca thành công!', 'success');
-
-    if (state.settings.notificationsEnabled) {
-        const msg = getRandomItem(WELCOME_MESSAGES);
-        sendBrowserNotification(
-            `🌅 TimeKeeper - Vào ca vui vẻ!`,
-            msg,
-            `shift-welcome`
-        );
-    }
 }
 
 function getRecordMealAllowance(record) {
@@ -600,7 +591,12 @@ function updateTimerDisplay() {
             const barStr = '█'.repeat(filledCount) + '░'.repeat(emptyCount);
             
             const notiTitle = `TimeKeeper - Ca: ${state.currentSession.shiftName}`;
-            const notiBody = `⏱️ ${pad(hours)}:${pad(minutes)}:${pad(seconds)} | Lương: ${formatCurrency(Math.round(elapsed / 3600000 * state.currentSession.hourlyRate))}\n[${barStr}] ${Math.round(percent)}% (${progressLabelText})`;
+            let notiBody = `⏱️ ${pad(hours)}:${pad(minutes)}:${pad(seconds)} | Lương: ${formatCurrency(Math.round(elapsed / 3600000 * state.currentSession.hourlyRate))}\n[${barStr}] ${Math.round(percent)}% (${progressLabelText})`;
+            
+            if (isFirstShow) {
+                const welcomeMsg = getRandomItem(WELCOME_MESSAGES);
+                notiBody = `${welcomeMsg}\n\n${notiBody}`;
+            }
             
             sendBrowserNotification(notiTitle, notiBody, 'shift-progress', !isFirstShow);
         }
@@ -2462,17 +2458,15 @@ function sendBrowserNotification(title, body, tag = null, silent = false) {
         tag: tag || undefined,
         renotify: (tag === 'shift-progress') ? false : ((tag && !silent) ? true : false),
         requireInteraction: (tag === 'shift-progress' || tag === 'shift-warning' || tag === 'shift-summary') ? true : false,
-        actions: [
+    };
+
+    if (tag !== 'shift-progress') {
+        options.actions = [
             {
                 action: 'close',
                 title: cuteBtnText
             }
-        ]
-    };
-
-    // Remove close action button for the persistent progress notification to keep it compact
-    if (tag === 'shift-progress') {
-        options.actions = [];
+        ];
     }
 
     if (Notification.permission === "granted") {
@@ -2480,12 +2474,16 @@ function sendBrowserNotification(title, body, tag = null, silent = false) {
             navigator.serviceWorker.ready.then(registration => {
                 registration.showNotification(title, options)
                     .catch(e => {
-                        console.warn("Service Worker notification failed, falling back:", e);
-                        new Notification(title, options);
+                        console.error("Service Worker showNotification failed:", e);
+                        showToast(`Lỗi hiển thị thông báo: ${e.message || e}`, 'error');
                     });
             });
         } else {
-            new Notification(title, options);
+            try {
+                new Notification(title, options);
+            } catch (e) {
+                console.error("Non-SW Notification failed:", e);
+            }
         }
     }
 }

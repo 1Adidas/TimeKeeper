@@ -2453,12 +2453,15 @@ function sendBrowserNotification(title, body, tag = null, silent = false) {
         body: body,
         icon: NOTIFICATION_ICON,
         badge: NOTIFICATION_BADGE,
-        vibrate: silent ? [] : [300, 110, 300],
         silent: silent,
         tag: tag || undefined,
         renotify: (tag === 'shift-progress') ? false : ((tag && !silent) ? true : false),
         requireInteraction: (tag === 'shift-progress' || tag === 'shift-warning' || tag === 'shift-summary') ? true : false,
     };
+
+    if (!silent) {
+        options.vibrate = [300, 110, 300];
+    }
 
     if (tag !== 'shift-progress') {
         options.actions = [

@@ -225,9 +225,19 @@ function loadData() {
         state.records = records ? JSON.parse(records) : [];
 
         const settings = localStorage.getItem(STORAGE_KEYS.SETTINGS);
-        state.settings = settings ? JSON.parse(settings) : { hourlyRate: 18000, notificationsEnabled: false };
+        const hasPermission = ("Notification" in window) && Notification.permission === "granted";
+        state.settings = settings ? JSON.parse(settings) : { hourlyRate: 18000, notificationsEnabled: hasPermission };
         
         if (state.settings.notificationsEnabled === undefined) {
+            state.settings.notificationsEnabled = hasPermission;
+        }
+
+        // Sync settings with current permission state
+        if ("Notification" in window) {
+            if (Notification.permission !== "granted") {
+                state.settings.notificationsEnabled = false;
+            }
+        } else {
             state.settings.notificationsEnabled = false;
         }
 
@@ -394,7 +404,6 @@ function clockIn() {
     updateHomeUI();
     showToast('Đã vào ca thành công!', 'success');
 
-    state.lastNotificationUpdate = now.getTime(); // Schedule the first silent progress notification after 60 seconds of work
     if (state.settings.notificationsEnabled) {
         const msg = getRandomItem(WELCOME_MESSAGES);
         sendBrowserNotification(
@@ -465,6 +474,7 @@ function clockOut() {
     saveData(STORAGE_KEYS.RECORDS, state.records);
 
     state.currentSession = null;
+    state.lastNotificationUpdate = null;
     localStorage.removeItem(STORAGE_KEYS.CURRENT);
 
     stopTimer();
@@ -582,6 +592,7 @@ function updateTimerDisplay() {
     if (state.settings.notificationsEnabled) {
         const lastUpdate = state.lastNotificationUpdate || 0;
         if (now - lastUpdate >= 60000 || !state.lastNotificationUpdate) {
+            const isFirstShow = !state.lastNotificationUpdate;
             state.lastNotificationUpdate = now.getTime();
             
             const filledCount = Math.round(percent / 10);
@@ -591,7 +602,7 @@ function updateTimerDisplay() {
             const notiTitle = `TimeKeeper - Ca: ${state.currentSession.shiftName}`;
             const notiBody = `⏱️ ${pad(hours)}:${pad(minutes)}:${pad(seconds)} | Lương: ${formatCurrency(Math.round(elapsed / 3600000 * state.currentSession.hourlyRate))}\n[${barStr}] ${Math.round(percent)}% (${progressLabelText})`;
             
-            sendBrowserNotification(notiTitle, notiBody, 'shift-progress', true);
+            sendBrowserNotification(notiTitle, notiBody, 'shift-progress', !isFirstShow);
         }
     }
 
@@ -2433,6 +2444,9 @@ function toggleNotifications() {
     }
 }
 
+const NOTIFICATION_ICON = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDZiNmQ0IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiPjwvY2lyY2xlPjxwb2x5bGluZSBwb2ludHM9IjEyIDYgMTIgMTIgMTYgMTQiPjwvcG9seWxpbmU+PC9zdmc+';
+const NOTIFICATION_BADGE = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiPjwvY2lyY2xlPjxwb2x5bGluZSBwb2ludHM9IjEyIDYgMTIgMTIgMTYgMTQiPjwvcG9seWxpbmU+PC9zdmc+';
+
 function sendBrowserNotification(title, body, tag = null, silent = false) {
     if (!state.settings.notificationsEnabled) return;
     if (!("Notification" in window)) return;
@@ -2441,12 +2455,12 @@ function sendBrowserNotification(title, body, tag = null, silent = false) {
 
     const options = {
         body: body,
-        icon: "/favicon.ico",
-        badge: "/favicon.ico",
+        icon: NOTIFICATION_ICON,
+        badge: NOTIFICATION_BADGE,
         vibrate: silent ? [] : [300, 110, 300],
         silent: silent,
         tag: tag || undefined,
-        renotify: (tag && !silent) ? true : false,
+        renotify: (tag === 'shift-progress') ? false : ((tag && !silent) ? true : false),
         requireInteraction: (tag === 'shift-progress' || tag === 'shift-warning' || tag === 'shift-summary') ? true : false,
         actions: [
             {

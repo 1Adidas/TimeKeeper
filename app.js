@@ -252,8 +252,8 @@ function clockIn() {
 
     if (state.settings.notificationsEnabled) {
         sendBrowserNotification(
-            `TimeKeeper - Vào ca thành công`,
-            `🌅 Bạn đã bắt đầu ca làm: ${state.currentSession.shiftName} với mức lương ${formatCurrency(state.currentSession.hourlyRate)}/giờ.`
+            `🌅 TimeKeeper - Vào ca vui vẻ!`,
+            `Chúc bạn một ca làm việc thật thuận lợi và tràn đầy năng lượng nhé! Cùng nỗ lực nào! 💪`
         );
     }
 }
@@ -329,8 +329,8 @@ function clockOut() {
 
     if (state.settings.notificationsEnabled) {
         sendBrowserNotification(
-            `TimeKeeper - Ra ca thành công`,
-            `🏁 Tổng kết ca: ${record.shiftName}. Thời gian: ${formattedDuration}. Thu nhập: ${formattedEarnings}.`
+            `🏁 Hết ca rồi, về nghỉ ngơi thôi! 🎉`,
+            `Hôm nay bạn đã làm việc cực kỳ vất vả và chăm chỉ rồi. Cảm ơn bạn rất nhiều vì sự nỗ lực tuyệt vời này! Hãy về nhà ăn một bữa thật ngon, tắm rửa và nghỉ ngơi sớm nhé. Bạn xứng đáng được thư giãn! 🥰💤`
         );
     }
 }
@@ -371,15 +371,18 @@ function updateTimerDisplay() {
         earningsEl.textContent = formatCurrency(earnings);
     }
 
-    // Progress push notification (every new hour)
-    if (state.settings.notificationsEnabled && hours > 0 && (!state.currentSession.lastNotifiedHour || hours > state.currentSession.lastNotifiedHour)) {
-        state.currentSession.lastNotifiedHour = hours;
-        saveData(STORAGE_KEYS.CURRENT, state.currentSession);
-        const currentEarnings = Math.round((elapsed / 3600000) * state.currentSession.hourlyRate);
-        sendBrowserNotification(
-            `TimeKeeper - Tiến trình ca làm`,
-            `⏱️ Bạn đã làm được ${hours} giờ. Thu nhập tích lũy tạm tính: ${formatCurrency(currentEarnings)}.`
-        );
+    // 30-minute reminder before shift ends (only for fixed shifts)
+    const endDate = getShiftEndDate(state.currentSession);
+    if (endDate && state.settings.notificationsEnabled && !state.currentSession.notified30Mins) {
+        const timeLeftMs = endDate - now;
+        if (timeLeftMs > 0 && timeLeftMs <= 30 * 60 * 1000) {
+            state.currentSession.notified30Mins = true;
+            saveData(STORAGE_KEYS.CURRENT, state.currentSession);
+            sendBrowserNotification(
+                `⚠️ Sắp hoàn thành ca rồi, cố lên! 😭`,
+                `Chỉ còn 30 phút nữa là hết ca thôi! Chân tay mỏi nhừ rồi đúng không? Cố gắng nốt một chút nữa thôi nhé, sắp được nghỉ ngơi rồi! 💪❤️`
+            );
+        }
     }
 }
 
@@ -2212,4 +2215,27 @@ function sendBrowserNotification(title, body) {
             console.error("Error displaying notification:", e);
         }
     }
+}
+
+function getShiftEndDate(session) {
+    const shift = state.shifts.find(s => s.id === session.shiftId);
+    if (!shift || shift.isFreestyle || !shift.end) return null;
+    
+    const startDate = new Date(session.startTime);
+    const [endH, endM] = shift.end.split(':').map(Number);
+    const [startH, startM] = shift.start.split(':').map(Number);
+    
+    const endDate = new Date(startDate);
+    endDate.setHours(endH, endM, 0, 0);
+    
+    const startMins = startH * 60 + startM;
+    const endMins = endH * 60 + endM;
+    
+    if (endMins < startMins) {
+        // Crosses midnight
+        if (startDate.getHours() >= startH - 1) {
+            endDate.setDate(endDate.getDate() + 1);
+        }
+    }
+    return endDate;
 }

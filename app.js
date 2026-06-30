@@ -257,10 +257,12 @@ function clockIn() {
     updateHomeUI();
     showToast('Đã vào ca thành công!', 'success');
 
+    state.lastNotificationUpdate = 0; // Reset notification update timer to trigger immediately
     if (state.settings.notificationsEnabled) {
         sendBrowserNotification(
             `🌅 TimeKeeper - Vào ca vui vẻ!`,
-            `Chúc bạn một ca làm việc thật thuận lợi và tràn đầy năng lượng nhé! Cùng nỗ lực nào! 💪`
+            `Chúc bạn một ca làm việc thật thuận lợi và tràn đầy năng lượng nhé! Cùng nỗ lực nào! 💪`,
+            `shift-welcome`
         );
     }
 }
@@ -334,10 +336,22 @@ function clockOut() {
     const formattedDuration = formatDurationFull(durationMs);
     showToast(`🏁 Đã ra ca! ${formattedDuration} — ${formattedEarnings}`, 'success');
 
+    // Close the persistent progress notification
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(registration => {
+            if (registration.getNotifications) {
+                registration.getNotifications({ tag: 'shift-progress' }).then(notifications => {
+                    notifications.forEach(n => n.close());
+                });
+            }
+        });
+    }
+
     if (state.settings.notificationsEnabled) {
         sendBrowserNotification(
             `🏁 Hết ca rồi, về nghỉ ngơi thôi! 🎉`,
-            `Hôm nay bạn đã làm việc cực kỳ vất vả và chăm chỉ rồi. Cảm ơn bạn rất nhiều vì sự nỗ lực tuyệt vời này! Hãy về nhà ăn một bữa thật ngon, tắm rửa và nghỉ ngơi sớm nhé. Bạn xứng đáng được thư giãn! 🥰💤`
+            `Hôm nay bạn đã làm việc cực kỳ vất vả và chăm chỉ rồi. Cảm ơn bạn rất nhiều vì sự nỗ lực tuyệt vời này! Hãy về nhà ăn một bữa thật ngon, tắm rửa và nghỉ ngơi sớm nhé. Bạn xứng đáng được thư giãn! 🥰💤`,
+            `shift-summary`
         );
     }
 }
@@ -425,6 +439,23 @@ function updateTimerDisplay() {
     if (progressPercent) progressPercent.textContent = `${Math.round(percent)}%`;
     if (progressText) progressText.textContent = progressLabelText;
 
+    // Silent persistent notification progress bar (update every 60 seconds)
+    if (state.settings.notificationsEnabled) {
+        const lastUpdate = state.lastNotificationUpdate || 0;
+        if (now - lastUpdate >= 60000 || !state.lastNotificationUpdate) {
+            state.lastNotificationUpdate = now.getTime();
+            
+            const filledCount = Math.round(percent / 10);
+            const emptyCount = 10 - filledCount;
+            const barStr = '█'.repeat(filledCount) + '░'.repeat(emptyCount);
+            
+            const notiTitle = `TimeKeeper - Ca: ${state.currentSession.shiftName}`;
+            const notiBody = `⏱️ ${pad(hours)}:${pad(minutes)}:${pad(seconds)} | Lương: ${formatCurrency(Math.round(elapsed / 3600000 * state.currentSession.hourlyRate))}\n[${barStr}] ${Math.round(percent)}% (${progressLabelText})`;
+            
+            sendBrowserNotification(notiTitle, notiBody, 'shift-progress', true);
+        }
+    }
+
     // 30-minute reminder before shift ends (only for fixed shifts)
     const endDate = getShiftEndDate(state.currentSession);
     if (endDate && state.settings.notificationsEnabled && !state.currentSession.notified30Mins) {
@@ -434,7 +465,8 @@ function updateTimerDisplay() {
             saveData(STORAGE_KEYS.CURRENT, state.currentSession);
             sendBrowserNotification(
                 `⚠️ Sắp hoàn thành ca rồi, cố lên! 😭`,
-                `Chỉ còn 30 phút nữa là hết ca thôi! Chân tay mỏi nhừ rồi đúng không? Cố gắng nốt một chút nữa thôi nhé, sắp được nghỉ ngơi rồi! 💪❤️`
+                `Chỉ còn 30 phút nữa là hết ca thôi! Chân tay mỏi nhừ rồi đúng không? Cố gắng nốt một chút nữa thôi nhé, sắp được nghỉ ngơi rồi! 💪❤️`,
+                `shift-warning`
             );
         }
     }
@@ -2261,7 +2293,7 @@ function toggleNotifications() {
     }
 }
 
-function sendBrowserNotification(title, body) {
+function sendBrowserNotification(title, body, tag = null, silent = false) {
     if (!state.settings.notificationsEnabled) return;
     if (!("Notification" in window)) return;
     
@@ -2269,8 +2301,23 @@ function sendBrowserNotification(title, body) {
         body: body,
         icon: "/favicon.ico",
         badge: "/favicon.ico",
-        vibrate: [100, 50, 100]
+        vibrate: silent ? [] : [100, 50, 100],
+        silent: silent,
+        tag: tag || undefined,
+        renotify: (tag && !silent) ? true : false,
+        requireInteraction: (tag === 'shift-progress') ? true : false,
+        actions: [
+            {
+                action: 'close',
+                title: 'Oki cậu luôn ❤️'
+            }
+        ]
     };
+
+    // Remove close action button for the persistent progress notification to keep it compact
+    if (tag === 'shift-progress') {
+        options.actions = [];
+    }
 
     if (Notification.permission === "granted") {
         if ('serviceWorker' in navigator) {

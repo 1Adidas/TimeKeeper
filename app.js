@@ -596,6 +596,7 @@ function updateTimerDisplay() {
             if (isFirstShow) {
                 const welcomeMsg = getRandomItem(WELCOME_MESSAGES);
                 notiBody = `${welcomeMsg}\n\n${notiBody}`;
+                showToast('🔔 Đang gửi thông báo tiến trình ra màn hình...', 'info');
             }
             
             sendBrowserNotification(notiTitle, notiBody, 'shift-progress', !isFirstShow);
@@ -2474,12 +2475,30 @@ function sendBrowserNotification(title, body, tag = null, silent = false) {
 
     if (Notification.permission === "granted") {
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.ready.then(registration => {
-                registration.showNotification(title, options)
-                    .catch(e => {
-                        console.error("Service Worker showNotification failed:", e);
-                        showToast(`Lỗi hiển thị thông báo: ${e.message || e}`, 'error');
+            // First try getRegistration() to avoid ready promise hangs
+            navigator.serviceWorker.getRegistration().then(registration => {
+                if (registration) {
+                    registration.showNotification(title, options)
+                        .catch(e => {
+                            console.error("SW showNotification failed:", e);
+                            showToast(`Lỗi hiển thị thông báo: ${e.message || e}`, 'error');
+                        });
+                } else {
+                    // Fallback to ready
+                    navigator.serviceWorker.ready.then(reg => {
+                        reg.showNotification(title, options)
+                            .catch(e => {
+                                console.error("SW ready showNotification failed:", e);
+                                showToast(`Lỗi SW Ready: ${e.message || e}`, 'error');
+                            });
+                    }).catch(err => {
+                        console.error("SW ready failed, falling back:", err);
+                        new Notification(title, options);
                     });
+                }
+            }).catch(err => {
+                console.error("getRegistration failed, falling back:", err);
+                new Notification(title, options);
             });
         } else {
             try {

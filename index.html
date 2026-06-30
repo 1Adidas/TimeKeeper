@@ -404,6 +404,20 @@
                     </div>
 
                     <div class="settings-group glass-card">
+                        <h3 class="settings-group-title">🔔 Thông Báo Đẩy</h3>
+                        <div class="form-group" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0;">
+                            <div>
+                                <label style="margin-bottom: 2px; font-weight:600; display:block;">Thông báo tiến trình</label>
+                                <span style="font-size:0.75rem; color:var(--text-secondary);">Nhắc nhở và cập nhật tiến độ ca làm việc ngoài ứng dụng</span>
+                            </div>
+                            <label class="switch-toggle">
+                                <input type="checkbox" id="notificationToggle" onchange="toggleNotifications()">
+                                <span class="slider-round"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-group glass-card">
                         <h3 class="settings-group-title">🗑️ Quản Lý Dữ Liệu</h3>
                         <button class="btn-danger" onclick="confirmClearData()">
                             <span>Xóa Toàn Bộ Dữ Liệu</span>

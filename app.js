@@ -60,6 +60,12 @@ function init() {
     // Set hourly rate input
     document.getElementById('hourlyRateInput').value = state.settings.hourlyRate;
 
+    // Set notification toggle input
+    const notiToggle = document.getElementById('notificationToggle');
+    if (notiToggle) {
+        notiToggle.checked = state.settings.notificationsEnabled || false;
+    }
+
     // Restore current session timer if active
     if (state.currentSession) {
         startTimer();
@@ -75,8 +81,12 @@ function loadData() {
         state.records = records ? JSON.parse(records) : [];
 
         const settings = localStorage.getItem(STORAGE_KEYS.SETTINGS);
-        state.settings = settings ? JSON.parse(settings) : { hourlyRate: 18000 };
+        state.settings = settings ? JSON.parse(settings) : { hourlyRate: 18000, notificationsEnabled: false };
         
+        if (state.settings.notificationsEnabled === undefined) {
+            state.settings.notificationsEnabled = false;
+        }
+
         if (!state.settings.bonusTypes) {
             state.settings.bonusTypes = [
                 { id: 'go', name: 'GO', amount: 12000, emoji: '🏬' },
@@ -239,6 +249,13 @@ function clockIn() {
     startTimer();
     updateHomeUI();
     showToast('Đã vào ca thành công!', 'success');
+
+    if (state.settings.notificationsEnabled) {
+        sendBrowserNotification(
+            `TimeKeeper - Vào ca thành công`,
+            `🌅 Bạn đã bắt đầu ca làm: ${state.currentSession.shiftName} với mức lương ${formatCurrency(state.currentSession.hourlyRate)}/giờ.`
+        );
+    }
 }
 
 function getRecordMealAllowance(record) {
@@ -309,6 +326,13 @@ function clockOut() {
     const formattedEarnings = formatCurrency(earnings);
     const formattedDuration = formatDurationFull(durationMs);
     showToast(`🏁 Đã ra ca! ${formattedDuration} — ${formattedEarnings}`, 'success');
+
+    if (state.settings.notificationsEnabled) {
+        sendBrowserNotification(
+            `TimeKeeper - Ra ca thành công`,
+            `🏁 Tổng kết ca: ${record.shiftName}. Thời gian: ${formattedDuration}. Thu nhập: ${formattedEarnings}.`
+        );
+    }
 }
 
 function startTimer() {
@@ -345,6 +369,17 @@ function updateTimerDisplay() {
         const durationHours = elapsed / 3600000;
         const earnings = Math.round(durationHours * state.currentSession.hourlyRate);
         earningsEl.textContent = formatCurrency(earnings);
+    }
+
+    // Progress push notification (every new hour)
+    if (state.settings.notificationsEnabled && hours > 0 && (!state.currentSession.lastNotifiedHour || hours > state.currentSession.lastNotifiedHour)) {
+        state.currentSession.lastNotifiedHour = hours;
+        saveData(STORAGE_KEYS.CURRENT, state.currentSession);
+        const currentEarnings = Math.round((elapsed / 3600000) * state.currentSession.hourlyRate);
+        sendBrowserNotification(
+            `TimeKeeper - Tiến trình ca làm`,
+            `⏱️ Bạn đã làm được ${hours} giờ. Thu nhập tích lũy tạm tính: ${formatCurrency(currentEarnings)}.`
+        );
     }
 }
 
@@ -2127,3 +2162,54 @@ window.addEventListener('resize', () => {
         updateStats();
     }
 });
+
+// ===== NOTIFICATIONS =====
+function toggleNotifications() {
+    const notiToggle = document.getElementById('notificationToggle');
+    if (!notiToggle) return;
+
+    if (notiToggle.checked) {
+        if (!("Notification" in window)) {
+            showToast('🚨 Trình duyệt của bạn không hỗ trợ thông báo đẩy!', 'error');
+            notiToggle.checked = false;
+            return;
+        }
+
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                state.settings.notificationsEnabled = true;
+                saveData(STORAGE_KEYS.SETTINGS, state.settings);
+                showToast('🔔 Đã bật thông báo đẩy thành công!', 'success');
+                
+                sendBrowserNotification(
+                    "TimeKeeper",
+                    "Ứng dụng sẽ gửi thông báo nhắc nhở và tiến trình ca làm việc cho bạn khi bạn vào ca."
+                );
+            } else {
+                state.settings.notificationsEnabled = false;
+                notiToggle.checked = false;
+                saveData(STORAGE_KEYS.SETTINGS, state.settings);
+                showToast('⚠️ Bạn đã từ chối quyền gửi thông báo!', 'warning');
+            }
+        });
+    } else {
+        state.settings.notificationsEnabled = false;
+        saveData(STORAGE_KEYS.SETTINGS, state.settings);
+        showToast('🔕 Đã tắt thông báo đẩy.', 'info');
+    }
+}
+
+function sendBrowserNotification(title, body) {
+    if (!state.settings.notificationsEnabled) return;
+    if (!("Notification" in window)) return;
+    if (Notification.permission === "granted") {
+        try {
+            new Notification(title, {
+                body: body,
+                icon: "/favicon.ico"
+            });
+        } catch (e) {
+            console.error("Error displaying notification:", e);
+        }
+    }
+}

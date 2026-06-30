@@ -401,10 +401,6 @@ function clockIn() {
 
     saveData(STORAGE_KEYS.CURRENT, state.currentSession);
     
-    // Set notification states for fresh clock in
-    state.lastNotificationUpdate = now.getTime();
-    state.progressNotified = false;
-
     startTimer();
     updateHomeUI();
     showToast('Đã vào ca thành công!', 'success');
@@ -480,8 +476,6 @@ function clockOut() {
     saveData(STORAGE_KEYS.RECORDS, state.records);
 
     state.currentSession = null;
-    state.lastNotificationUpdate = null;
-    state.progressNotified = null;
     localStorage.removeItem(STORAGE_KEYS.CURRENT);
 
     stopTimer();
@@ -595,24 +589,7 @@ function updateTimerDisplay() {
     if (progressPercent) progressPercent.textContent = `${Math.round(percent)}%`;
     if (progressText) progressText.textContent = progressLabelText;
 
-    // Silent persistent notification progress bar (update every 10 seconds for realtime feel)
-    if (state.settings.notificationsEnabled) {
-        const lastUpdate = state.lastNotificationUpdate || 0;
-        if (now - lastUpdate >= 10000 || !state.lastNotificationUpdate) {
-            const isFirstShow = !state.progressNotified;
-            state.progressNotified = true;
-            state.lastNotificationUpdate = now.getTime();
-            
-            const filledCount = Math.round(percent / 10);
-            const emptyCount = 10 - filledCount;
-            const barStr = '█'.repeat(filledCount) + '░'.repeat(emptyCount);
-            
-            const notiTitle = `TimeKeeper - Ca: ${state.currentSession.shiftName}`;
-            const notiBody = `⏱️ ${pad(hours)}:${pad(minutes)}:${pad(seconds)} | Lương: ${formatCurrency(Math.round(elapsed / 3600000 * state.currentSession.hourlyRate))}\n[${barStr}] ${Math.round(percent)}% (${progressLabelText})`;
-            
-            sendBrowserNotification(notiTitle, notiBody, 'shift-progress', !isFirstShow);
-        }
-    }
+
 
     // 30-minute reminder before shift ends (only for fixed shifts)
     const endDate = getShiftEndDate(state.currentSession);

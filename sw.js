@@ -1,4 +1,4 @@
-// Version 2.2
+// Version 2.4
 self.addEventListener('install', (event) => {
     self.skipWaiting();
 });

@@ -378,6 +378,53 @@ function updateTimerDisplay() {
         earningsEl.textContent = formatCurrency(earnings);
     }
 
+    // Update progress bar
+    let percent = 0;
+    let progressLabelText = 'Ca làm tự do';
+    const shift = state.shifts.find(s => s.id === state.currentSession.shiftId);
+    
+    if (shift && !shift.isFreestyle && shift.end) {
+        const endDate = getShiftEndDate(state.currentSession);
+        if (endDate) {
+            const totalDuration = endDate - start;
+            if (totalDuration > 0) {
+                percent = (elapsed / totalDuration) * 100;
+                percent = Math.max(0, Math.min(100, percent));
+                
+                const timeLeftMs = endDate - now;
+                if (timeLeftMs > 0) {
+                    const leftHours = Math.floor(timeLeftMs / 3600000);
+                    const leftMinutes = Math.floor((timeLeftMs % 3600000) / 60000);
+                    progressLabelText = `Còn ${leftHours > 0 ? leftHours + 'h ' : ''}${leftMinutes}m nữa hết ca`;
+                } else {
+                    progressLabelText = 'Đã hết ca (tăng ca)';
+                }
+            }
+        }
+    } else {
+        // Freestyle shift: progress towards 8 hours
+        const targetMs = 8 * 60 * 60 * 1000;
+        percent = (elapsed / targetMs) * 100;
+        percent = Math.max(0, Math.min(100, percent));
+        
+        if (elapsed < targetMs) {
+            const leftMs = targetMs - elapsed;
+            const leftHours = Math.floor(leftMs / 3600000);
+            const leftMinutes = Math.floor((leftMs % 3600000) / 60000);
+            progressLabelText = `Mục tiêu 8h: còn ${leftHours > 0 ? leftHours + 'h ' : ''}${leftMinutes}m`;
+        } else {
+            progressLabelText = 'Đã đạt mục tiêu 8h';
+        }
+    }
+    
+    const progressBar = document.getElementById('shiftProgressBar');
+    const progressPercent = document.getElementById('progressPercent');
+    const progressText = document.getElementById('progressText');
+    
+    if (progressBar) progressBar.style.width = `${percent}%`;
+    if (progressPercent) progressPercent.textContent = `${Math.round(percent)}%`;
+    if (progressText) progressText.textContent = progressLabelText;
+
     // 30-minute reminder before shift ends (only for fixed shifts)
     const endDate = getShiftEndDate(state.currentSession);
     if (endDate && state.settings.notificationsEnabled && !state.currentSession.notified30Mins) {
@@ -403,11 +450,14 @@ function updateHomeUI() {
 
     const btnChangeShift = document.querySelector('.btn-change-shift');
     const btnChangeRate = document.querySelector('.btn-change-rate');
+    const progressContainer = document.getElementById('shiftProgressContainer');
 
     if (state.currentSession) {
         statusCard.classList.add('active');
         statusText.textContent = `Đang làm — ${state.currentSession.shiftName}`;
         currentShiftInfo.style.display = 'flex';
+        if (progressContainer) progressContainer.style.display = 'block';
+        
         btnClockIn.disabled = true;
         btnClockOut.disabled = false;
         if (btnChangeShift) btnChangeShift.style.display = 'none';
@@ -416,6 +466,8 @@ function updateHomeUI() {
         statusCard.classList.remove('active');
         statusText.textContent = 'Chưa vào ca';
         currentShiftInfo.style.display = 'none';
+        if (progressContainer) progressContainer.style.display = 'none';
+        
         btnClockIn.disabled = false;
         btnClockOut.disabled = true;
         if (btnChangeShift) btnChangeShift.style.display = 'block';

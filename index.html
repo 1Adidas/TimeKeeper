@@ -70,6 +70,16 @@
                                 <span class="earnings-value" id="currentEarnings">0 ₫</span>
                             </div>
                         </div>
+                        <!-- Shift Progress Bar -->
+                        <div class="shift-progress-container" id="shiftProgressContainer" style="display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-glass);">
+                            <div class="shift-progress-bar-wrapper" style="width: 100%; height: 8px; background: rgba(255, 255, 255, 0.08); border-radius: 4px; overflow: hidden; position: relative;">
+                                <div class="shift-progress-bar" id="shiftProgressBar" style="width: 0%; height: 100%; background: var(--gradient-main); border-radius: 4px; transition: width 0.5s ease; box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 0.7rem; color: var(--text-secondary); font-weight: 500;">
+                                <span id="progressPercent">0%</span>
+                                <span id="progressText" style="text-transform: none; letter-spacing: 0;">Tiến trình ca làm</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Big Clock -->

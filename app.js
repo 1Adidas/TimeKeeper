@@ -263,6 +263,12 @@ function clockOut() {
     const now = new Date();
     const start = new Date(state.currentSession.startTime);
     const durationMs = now - start;
+
+    if (durationMs <= 0) {
+        showToast('Thời gian ra ca không hợp lệ! Vui lòng kiểm tra lại giờ hệ thống.', 'warning');
+        return;
+    }
+
     const durationHours = durationMs / (1000 * 60 * 60);
     
     // Meal allowance calculation
@@ -350,18 +356,25 @@ function updateHomeUI() {
     const btnClockIn = document.getElementById('btnClockIn');
     const btnClockOut = document.getElementById('btnClockOut');
 
+    const btnChangeShift = document.querySelector('.btn-change-shift');
+    const btnChangeRate = document.querySelector('.btn-change-rate');
+
     if (state.currentSession) {
         statusCard.classList.add('active');
         statusText.textContent = `Đang làm — ${state.currentSession.shiftName}`;
         currentShiftInfo.style.display = 'flex';
         btnClockIn.disabled = true;
         btnClockOut.disabled = false;
+        if (btnChangeShift) btnChangeShift.style.display = 'none';
+        if (btnChangeRate) btnChangeRate.style.display = 'none';
     } else {
         statusCard.classList.remove('active');
         statusText.textContent = 'Chưa vào ca';
         currentShiftInfo.style.display = 'none';
         btnClockIn.disabled = false;
         btnClockOut.disabled = true;
+        if (btnChangeShift) btnChangeShift.style.display = 'block';
+        if (btnChangeRate) btnChangeRate.style.display = 'block';
 
         const timerEl = document.getElementById('workTimer');
         const earningsEl = document.getElementById('currentEarnings');
@@ -384,6 +397,9 @@ function updateHomeUI() {
         shiftName.textContent = 'Chưa chọn ca';
         shiftTime.textContent = 'Vui lòng chọn khung giờ';
     }
+
+    // Call updateSettingsUI helper to enable/disable settings controls dynamically
+    updateSettingsUI();
 }
 
 function updateRateDisplay() {
@@ -391,6 +407,18 @@ function updateRateDisplay() {
     if (rateValue) {
         rateValue.textContent = `${formatNumber(state.settings.hourlyRate)} ₫/giờ`;
     }
+}
+
+function updateSettingsUI() {
+    const input = document.getElementById('hourlyRateInput');
+    const saveBtn = document.querySelector('#page-settings button[onclick="saveRate()"]');
+    const presets = document.querySelectorAll('#page-settings .preset-btn');
+    
+    const isDisabled = state.currentSession !== null;
+    
+    if (input) input.disabled = isDisabled;
+    if (saveBtn) saveBtn.disabled = isDisabled;
+    presets.forEach(btn => btn.disabled = isDisabled);
 }
 
 // ===== SHIFTS =====
@@ -444,6 +472,11 @@ function renderShifts() {
 }
 
 function selectShift(shiftId, isFreestyle = false) {
+    if (state.currentSession) {
+        showToast('Bạn không thể đổi ca khi đang làm việc!', 'warning');
+        return;
+    }
+
     let shift;
     if (isFreestyle) {
         shift = { id: 'freestyle', name: 'Ca Tự Do', emoji: '⏱️', isFreestyle: true };
@@ -565,18 +598,101 @@ function renderHistory() {
     // Filter combined items
     const items = getFilteredHistoryItems();
 
-    // Update summary (only records)
-    const records = getFilteredRecords();
-    const totalShiftsEl = document.getElementById('totalShifts');
-    const totalHoursEl = document.getElementById('totalHours');
-    const totalEarningsEl = document.getElementById('totalEarnings');
+    // Update summary cards dynamically based on active tab
+    const card1 = document.querySelector('.history-summary .summary-card:nth-child(1)');
+    const card2 = document.querySelector('.history-summary .summary-card:nth-child(2)');
+    const card3 = document.querySelector('.history-summary .summary-card:nth-child(3)');
+    
+    const { startDate, endDate } = getHistoryFilterDates();
+    const periodRecords = state.records.filter(r => {
+        const d = new Date(r.startTime);
+        return d >= startDate && d <= endDate;
+    });
+    
+    const totalHours = periodRecords.reduce((sum, r) => sum + r.durationHours, 0);
+    const shiftEarnings = periodRecords.reduce((sum, r) => sum + r.earnings, 0);
+    
+    const periodPurchases = state.purchases.filter(p => {
+        const d = new Date(p.date);
+        return d >= startDate && d <= endDate;
+    });
+    const purchaseTotal = periodPurchases.reduce((sum, p) => sum + p.amount, 0);
+    
+    const milestones = getTickMilestones();
+    const periodMilestones = milestones.filter(m => {
+        const d = new Date(m.date);
+        return d >= startDate && d <= endDate;
+    });
+    const milestoneTotal = periodMilestones.reduce((sum, m) => sum + m.amount, 0);
+    
+    const periodTicks = state.ticks.filter(t => {
+        const d = new Date(t.date);
+        return d >= startDate && d <= endDate;
+    });
 
-    const totalHours = records.reduce((sum, r) => sum + r.durationHours, 0);
-    const totalEarnings = records.reduce((sum, r) => sum + r.earnings, 0);
+    if (card1 && card2 && card3) {
+        const icon1 = card1.querySelector('.summary-icon');
+        const val1 = card1.querySelector('.summary-value');
+        const lbl1 = card1.querySelector('.summary-label');
+        
+        const icon2 = card2.querySelector('.summary-icon');
+        const val2 = card2.querySelector('.summary-value');
+        const lbl2 = card2.querySelector('.summary-label');
+        
+        const icon3 = card3.querySelector('.summary-icon');
+        const val3 = card3.querySelector('.summary-value');
+        const lbl3 = card3.querySelector('.summary-label');
 
-    if (totalShiftsEl) totalShiftsEl.textContent = records.length;
-    if (totalHoursEl) totalHoursEl.textContent = `${totalHours.toFixed(1)}h`;
-    if (totalEarningsEl) totalEarningsEl.textContent = formatCurrencyShort(totalEarnings);
+        if (state.historyTab === 'all') {
+            icon1.textContent = '📅';
+            lbl1.textContent = 'Số ca';
+            val1.textContent = periodRecords.length;
+            
+            icon2.textContent = '⏱️';
+            lbl2.textContent = 'Tổng giờ';
+            val2.textContent = `${totalHours.toFixed(1)}h`;
+            
+            icon3.textContent = '💵';
+            lbl3.textContent = 'Thu nhập';
+            val3.textContent = formatCurrencyShort(shiftEarnings + purchaseTotal + milestoneTotal);
+        } else if (state.historyTab === 'shift') {
+            icon1.textContent = '📅';
+            lbl1.textContent = 'Số ca';
+            val1.textContent = periodRecords.length;
+            
+            icon2.textContent = '⏱️';
+            lbl2.textContent = 'Tổng giờ';
+            val2.textContent = `${totalHours.toFixed(1)}h`;
+            
+            icon3.textContent = '💵';
+            lbl3.textContent = 'Lương ca';
+            val3.textContent = formatCurrencyShort(shiftEarnings);
+        } else if (state.historyTab === 'bonus') {
+            icon1.textContent = '🎁';
+            lbl1.textContent = 'Lần nhận';
+            val1.textContent = periodPurchases.length + periodMilestones.length;
+            
+            icon2.textContent = '⭐';
+            lbl2.textContent = 'Thưởng tick';
+            val2.textContent = formatCurrencyShort(milestoneTotal);
+            
+            icon3.textContent = '💵';
+            lbl3.textContent = 'Tiền thưởng';
+            val3.textContent = formatCurrencyShort(purchaseTotal + milestoneTotal);
+        } else if (state.historyTab === 'tick') {
+            icon1.textContent = '👍';
+            lbl1.textContent = 'Tick Tốt';
+            val1.textContent = periodTicks.filter(t => t.type === 'good').length;
+            
+            icon2.textContent = '👎';
+            lbl2.textContent = 'Tick Xấu';
+            val2.textContent = periodTicks.filter(t => t.type === 'bad').length;
+            
+            icon3.textContent = '📊';
+            lbl3.textContent = 'Tổng thưởng';
+            val3.textContent = (milestoneTotal >= 0 ? '+' : '') + formatCurrencyShort(milestoneTotal);
+        }
+    }
 
     if (items.length === 0) {
         list.innerHTML = `
@@ -623,12 +739,40 @@ function renderHistory() {
                 const endTimeStr = formatTime(endDate);
                 const durationStr = formatDurationShort(record.durationMs);
                 const mealAllowance = getRecordMealAllowance(record);
-                const mealBadge = mealAllowance > 0 ? `<span class="history-meal-badge" style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.65rem; background: rgba(34, 197, 94, 0.12); color: var(--accent-green); border: 1px solid rgba(34, 197, 94, 0.2); padding: 2px 6px; border-radius: 6px; margin-left: 6px;">🍴 +${formatCurrencyShort(mealAllowance)} ăn</span>` : '';
+                const mealBadge = mealAllowance > 0 ? `<span class="history-meal-badge" style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.65rem; background: rgba(34, 197, 94, 0.12); color: var(--accent-green); border: 1px solid rgba(34, 197, 94, 0.2); padding: 2px 6px; border-radius: 6px;">🍴 +${formatCurrencyShort(mealAllowance)} ăn</span>` : '';
+                
+                let manualBadge = '';
+                if (record.isManual) {
+                    const isFuture = new Date(record.startTime) > new Date(record.createdAt || Number(record.id.replace('manual-', '')) || Date.now());
+                    if (isFuture) {
+                        manualBadge = `<span class="history-manual-badge" style="display: inline-flex; align-items: center; background: rgba(139, 92, 246, 0.12); color: var(--accent-purple); border: 1px solid rgba(139, 92, 246, 0.2); padding: 2px 6px; border-radius: 6px;">🔮 Chấm công trước</span>`;
+                    } else {
+                        manualBadge = `<span class="history-manual-badge" style="display: inline-flex; align-items: center; background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); padding: 2px 6px; border-radius: 6px;">✍️ Chấm công bù</span>`;
+                    }
+                }
+
+                const hasBadges = mealBadge || manualBadge;
+                const badgesRow = hasBadges ? `
+                    <div class="history-badges" style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px;">
+                        ${mealBadge}${manualBadge}
+                    </div>
+                ` : '';
+
                 return `
                     <div class="history-item" style="animation-delay: ${Math.min((gIndex*0.1) + index * 0.05, 0.5)}s; margin-bottom: 8px;">
-                        <div class="history-info" style="margin-left: 0;">
-                            <div class="history-shift-name">${record.shiftEmoji || '📋'} ${record.shiftName}${mealBadge}</div>
-                            <div class="history-time-range">${timeStr} → ${endTimeStr}</div>
+                        <div class="history-info" style="margin-left: 0; display: flex; gap: 10px; align-items: flex-start; flex: 1; min-width: 0;">
+                            <div style="font-size: 1.2rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: 8px; flex-shrink: 0; margin-top: 1px;">
+                                ${record.shiftEmoji || '📋'}
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1;">
+                                <div class="history-shift-name" style="font-size: 0.82rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0; display: block; white-space: normal; overflow: visible; text-overflow: clip;">
+                                    ${record.shiftName}
+                                </div>
+                                ${badgesRow}
+                                <div class="history-time-range" style="margin-top: 2px;">
+                                    ${timeStr} → ${endTimeStr}
+                                </div>
+                            </div>
                         </div>
                         <div class="history-right">
                             <div class="history-duration">${durationStr}</div>
@@ -642,12 +786,18 @@ function renderHistory() {
                 const bonusType = state.settings.bonusTypes.find(b => b.id === bonus.typeId) || { name: bonus.store, emoji: bonus.store === 'GO' ? '🏬' : '🍞' };
                 return `
                     <div class="history-item" style="animation-delay: ${Math.min((gIndex*0.1) + index * 0.05, 0.5)}s; margin-bottom: 8px;">
-                        <div class="history-info" style="margin-left: 0; flex-direction:row; align-items:center; gap:8px;">
-                            <div style="font-size:1.2rem;">${bonusType.emoji}</div>
-                            <div class="tick-recent-content">
-                                <span style="font-weight:600; color:var(--text-primary); font-size:0.8rem;">Thưởng: ${bonusType.name}</span>
-                                <span>${timeStr}</span>
-                                ${bonus.note ? `<div class="bonus-note">"${bonus.note}"</div>` : ''}
+                        <div class="history-info" style="margin-left: 0; display: flex; gap: 10px; align-items: flex-start; flex: 1; min-width: 0;">
+                            <div style="font-size: 1.2rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: 8px; flex-shrink: 0; margin-top: 1px;">
+                                ${bonusType.emoji}
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1;">
+                                <div style="font-size: 0.82rem; font-weight: 600; color: var(--text-primary);">
+                                    Thưởng: ${bonusType.name}
+                                </div>
+                                <div style="font-size: 0.73rem; color: var(--text-secondary);">
+                                    ${timeStr}
+                                </div>
+                                ${bonus.note ? `<div class="bonus-note" style="margin-top: 2px;">"${bonus.note}"</div>` : ''}
                             </div>
                         </div>
                         <div class="history-right">
@@ -656,17 +806,46 @@ function renderHistory() {
                         <button class="history-item-delete" onclick="deletePurchase('${bonus.id}')">✕</button>
                     </div>
                 `;
+            } else if (item.itemType === 'milestone') {
+                const milestone = item.data;
+                const isPositive = milestone.amount >= 0;
+                return `
+                    <div class="history-item" style="animation-delay: ${Math.min((gIndex*0.1) + index * 0.05, 0.5)}s; margin-bottom: 8px;">
+                        <div class="history-info" style="margin-left: 0; display: flex; gap: 10px; align-items: flex-start; flex: 1; min-width: 0;">
+                            <div style="font-size: 1.2rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: 8px; flex-shrink: 0; margin-top: 1px;">
+                                ${milestone.emoji}
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1;">
+                                <div style="font-size: 0.82rem; font-weight: 600; color: ${isPositive ? 'var(--accent-green)' : 'var(--accent-red)'};">
+                                    ${milestone.name}
+                                </div>
+                                <div style="font-size: 0.73rem; color: var(--text-secondary);">
+                                    ${timeStr}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="history-right">
+                            <div class="history-earnings" style="color:${isPositive ? 'var(--accent-green)' : 'var(--accent-red)'};">${isPositive ? '+' : ''}${formatCurrencyShort(milestone.amount)}</div>
+                        </div>
+                    </div>
+                `;
             } else if (item.itemType === 'tick') {
                 const tick = item.data;
                 const isGood = tick.type === 'good';
                 return `
                     <div class="history-item" style="animation-delay: ${Math.min((gIndex*0.1) + index * 0.05, 0.5)}s; margin-bottom: 8px;">
-                        <div class="history-info" style="margin-left: 0; flex-direction:row; align-items:center; gap:8px;">
-                            <div style="font-size:1.2rem;">${isGood ? '👍' : '👎'}</div>
-                            <div class="tick-recent-content">
-                                <span style="font-weight:600; color:${isGood ? 'var(--accent-green)' : 'var(--accent-red)'}; font-size:0.8rem;">Tick ${isGood ? 'Tốt' : 'Xấu'}</span>
-                                <span>${timeStr}</span>
-                                ${tick.note ? `<div class="tick-note">"${tick.note}"</div>` : ''}
+                        <div class="history-info" style="margin-left: 0; display: flex; gap: 10px; align-items: flex-start; flex: 1; min-width: 0;">
+                            <div style="font-size: 1.2rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: 8px; flex-shrink: 0; margin-top: 1px;">
+                                ${isGood ? '👍' : '👎'}
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1;">
+                                <div style="font-weight: 600; color: ${isGood ? 'var(--accent-green)' : 'var(--accent-red)'}; font-size: 0.82rem;">
+                                    Tick ${isGood ? 'Tốt' : 'Xấu'}
+                                </div>
+                                <div style="font-size: 0.73rem; color: var(--text-secondary);">
+                                    ${timeStr}
+                                </div>
+                                ${tick.note ? `<div class="tick-note" style="margin-top: 2px;">"${tick.note}"</div>` : ''}
                             </div>
                         </div>
                         <button class="history-item-delete" onclick="deleteTick('${tick.id}')">✕</button>
@@ -700,31 +879,7 @@ function filterHistory() {
 }
 
 function getFilteredHistoryItems() {
-    const now = new Date();
-    let startDate, endDate;
-
-    switch (state.historyFilter) {
-        case 'week':
-            startDate = new Date(now);
-            startDate.setDate(now.getDate() - now.getDay() + 1);
-            startDate.setHours(0, 0, 0, 0);
-            endDate = new Date();
-            break;
-        case 'month':
-            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-            endDate = new Date();
-            break;
-        case 'last-month':
-            startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-            endDate = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
-            break;
-        case 'all-time':
-        default:
-            startDate = new Date(0);
-            endDate = new Date();
-            break;
-    }
-
+    const { startDate, endDate } = getHistoryFilterDates();
     let items = [];
 
     if (state.historyTab === 'all' || state.historyTab === 'shift') {
@@ -741,6 +896,15 @@ function getFilteredHistoryItems() {
             const d = new Date(p.date);
             if (d >= startDate && d <= endDate) {
                 items.push({ itemType: 'bonus', dateObj: d, data: p });
+            }
+        });
+        
+        // Add tick milestones to history under bonus/all
+        const milestones = getTickMilestones();
+        milestones.forEach(m => {
+            const d = new Date(m.date);
+            if (d >= startDate && d <= endDate) {
+                items.push({ itemType: 'milestone', dateObj: d, data: m });
             }
         });
     }
@@ -851,9 +1015,7 @@ function getRecordsForPeriod(period) {
 
     switch (period) {
         case 'week':
-            startDate = new Date(now);
-            startDate.setDate(now.getDate() - now.getDay() + 1);
-            startDate.setHours(0, 0, 0, 0);
+            startDate = getStartOfWeek(now);
             break;
         case 'month':
             startDate = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -914,9 +1076,7 @@ function renderChart(records) {
 
     if (state.statsPeriod === 'week') {
         const now = new Date();
-        const startOfWeek = new Date(now);
-        startOfWeek.setDate(now.getDate() - now.getDay() + 1);
-        startOfWeek.setHours(0, 0, 0, 0);
+        const startOfWeek = getStartOfWeek(now);
 
         for (let i = 0; i < 7; i++) {
             const d = new Date(startOfWeek);
@@ -1033,7 +1193,8 @@ function renderBreakdown(records, purchases, ticks, tickMilestones) {
                 hours: 0,
                 shifts: 0,
                 bonuses: [],
-                ticks: []
+                ticks: [],
+                shiftDetails: []
             };
         }
     }
@@ -1047,6 +1208,22 @@ function renderBreakdown(records, purchases, ticks, tickMilestones) {
         daily[key].hours += r.durationHours;
         daily[key].shifts++;
         daily[key].mealAllowance += getRecordMealAllowance(r);
+        
+        // Save shift details (times & badges)
+        const startStr = formatTime(new Date(r.startTime));
+        const endStr = formatTime(new Date(r.endTime));
+        let typeText = '';
+        if (r.isManual) {
+            const isFuture = new Date(r.startTime) > new Date(r.createdAt || Number(r.id.replace('manual-', '')) || Date.now());
+            typeText = isFuture ? 'Chấm công trước' : 'Chấm công bù';
+        }
+        daily[key].shiftDetails.push({
+            name: r.shiftName,
+            emoji: r.shiftEmoji || '📋',
+            start: startStr,
+            end: endStr,
+            typeText: typeText
+        });
     });
 
     // 2. Group purchases (bonuses)
@@ -1134,6 +1311,32 @@ function renderBreakdown(records, purchases, ticks, tickMilestones) {
             tagsHtml += `<span class="breakdown-bonus-badge none" style="padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; background: rgba(255, 255, 255, 0.04); color: var(--text-muted); border: 1px solid rgba(255, 255, 255, 0.08); display: inline-flex; align-items: center; gap: 4px; margin-right: 4px; margin-bottom: 4px;">Không có hoạt động khác</span>`;
         }
 
+        let shiftTimesHtml = '';
+        if (entry.shiftDetails && entry.shiftDetails.length > 0) {
+            shiftTimesHtml = `
+                <div class="breakdown-shifts-list" style="display:flex; flex-direction:column; gap:4px; margin-bottom:4px; padding-left:2px; font-size:0.75rem; color:var(--text-secondary);">
+                    ${entry.shiftDetails.map(sd => {
+                        let badgeHtml = '';
+                        if (sd.typeText) {
+                            const isFuture = sd.typeText.includes('trước');
+                            const badgeStyle = isFuture 
+                                ? 'background: rgba(139, 92, 246, 0.12); color: var(--accent-purple); border: 1px solid rgba(139, 92, 246, 0.2);'
+                                : 'background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2);';
+                            badgeHtml = `<span style="padding: 1px 4px; border-radius: 4px; font-size: 0.6rem; margin-left: 4px; ${badgeStyle}">${sd.typeText}</span>`;
+                        }
+                        return `
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <span>${sd.emoji}</span>
+                                <span style="font-weight:500; color:var(--text-primary);">${sd.name}</span>
+                                <span style="opacity:0.6;">(${sd.start} - ${sd.end})</span>
+                                ${badgeHtml}
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
         return `
             <div class="breakdown-item-v2" style="display:flex; flex-direction:column; gap:6px; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--border-glass); margin-bottom: 8px;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1144,6 +1347,7 @@ function renderBreakdown(records, purchases, ticks, tickMilestones) {
                     <span>Ca làm: ${formatCurrencyShort(entry.shiftEarnings)} (${entry.hours.toFixed(1)}h)</span>
                     <span>Thưởng/Phạt: ${(entry.bonusEarnings >= 0 && entry.bonusEarnings !== 0 ? '+' : '')}${formatCurrencyShort(entry.bonusEarnings)}</span>
                 </div>
+                ${shiftTimesHtml}
                 <div class="breakdown-bar-container" style="height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;">
                     <div class="breakdown-bar" style="width: ${barWidth}%; height:100%; background:linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); border-radius:2px;"></div>
                 </div>
@@ -1161,6 +1365,11 @@ function setRate(amount) {
 }
 
 function saveRate() {
+    if (state.currentSession) {
+        showToast('Bạn không thể thay đổi mức lương khi đang làm việc!', 'warning');
+        return;
+    }
+
     const input = document.getElementById('hourlyRateInput');
     const rate = parseInt(input.value);
 
@@ -1407,6 +1616,43 @@ function pad(n) {
     return String(n).padStart(2, '0');
 }
 
+function getStartOfWeek(date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    d.setDate(diff);
+    d.setHours(0, 0, 0, 0);
+    return d;
+}
+
+function getHistoryFilterDates() {
+    const now = new Date();
+    let startDate, endDate;
+
+    switch (state.historyFilter) {
+        case 'week':
+            startDate = getStartOfWeek(now);
+            endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + 6);
+            endDate.setHours(23, 59, 59, 999);
+            break;
+        case 'month':
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+            break;
+        case 'last-month':
+            startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            endDate = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+            break;
+        case 'all-time':
+        default:
+            startDate = new Date(0);
+            endDate = new Date(8640000000000000); // Tương lai xa để hiện toàn bộ dữ liệu
+            break;
+    }
+    return { startDate, endDate };
+}
+
 // ===== BONUS TRACKING =====
 function addBonus(typeId) {
     const bonusType = state.settings.bonusTypes.find(b => b.id === typeId);
@@ -1431,12 +1677,27 @@ function addBonus(typeId) {
 }
 
 function deletePurchase(purchaseId) {
-    state.purchases = state.purchases.filter(p => p.id !== purchaseId);
-    saveData(STORAGE_KEYS.PURCHASES, state.purchases);
-    updateBonusUI();
-    updateStats();
-    if(state.currentPage === 'history') renderHistory();
-    showToast('Đã xóa', 'info');
+    const purchase = state.purchases.find(p => p.id === purchaseId);
+    if (!purchase) return;
+
+    showModal(
+        'Xóa khoản thưởng',
+        `Bạn có chắc muốn xóa khoản thưởng "${purchase.store}" trị giá ${formatCurrency(purchase.amount)}?`,
+        [
+            { text: 'Hủy', class: 'modal-btn-cancel', action: closeModal },
+            {
+                text: 'Xóa', class: 'modal-btn-danger', action: () => {
+                    state.purchases = state.purchases.filter(p => p.id !== purchaseId);
+                    saveData(STORAGE_KEYS.PURCHASES, state.purchases);
+                    updateBonusUI();
+                    updateStats();
+                    if (state.currentPage === 'history') renderHistory();
+                    closeModal();
+                    showToast('Đã xóa khoản thưởng', 'info');
+                }
+            }
+        ]
+    );
 }
 
 function updateBonusUI() {
@@ -1539,12 +1800,28 @@ function addTick(type) {
 }
 
 function deleteTick(tickId) {
-    state.ticks = state.ticks.filter(t => t.id !== tickId);
-    saveData(STORAGE_KEYS.TICKS, state.ticks);
-    updateTickUI();
-    updateStats();
-    if (state.currentPage === 'history') renderHistory();
-    showToast('Đã xóa tick', 'info');
+    const tick = state.ticks.find(t => t.id === tickId);
+    if (!tick) return;
+    const typeLabel = tick.type === 'good' ? 'Tốt' : 'Xấu';
+
+    showModal(
+        'Xóa Tick',
+        `Bạn có chắc muốn xóa Tick ${typeLabel} này? Việc này có thể ảnh hưởng đến các cột mốc thưởng/phạt của bạn.`,
+        [
+            { text: 'Hủy', class: 'modal-btn-cancel', action: closeModal },
+            {
+                text: 'Xóa', class: 'modal-btn-danger', action: () => {
+                    state.ticks = state.ticks.filter(t => t.id !== tickId);
+                    saveData(STORAGE_KEYS.TICKS, state.ticks);
+                    updateTickUI();
+                    updateStats();
+                    if (state.currentPage === 'history') renderHistory();
+                    closeModal();
+                    showToast('Đã xóa tick', 'info');
+                }
+            }
+        ]
+    );
 }
 
 function getTickMilestones() {
@@ -1674,10 +1951,7 @@ function getPeriodStartDate(period) {
     const now = new Date();
     switch (period) {
         case 'week':
-            const startOfWeek = new Date(now);
-            startOfWeek.setDate(now.getDate() - now.getDay() + 1);
-            startOfWeek.setHours(0, 0, 0, 0);
-            return startOfWeek;
+            return getStartOfWeek(now);
         case 'month':
             return new Date(now.getFullYear(), now.getMonth(), 1);
         case 'year':
@@ -1784,6 +2058,11 @@ function saveManualClock() {
     let startD = new Date(`${dateStr}T${startTime}`);
     let endD = new Date(`${dateStr}T${endTime}`);
 
+    if (isNaN(startD.getTime()) || isNaN(endD.getTime())) {
+        showToast('Ngày hoặc giờ không hợp lệ!', 'warning');
+        return;
+    }
+
     if (endD <= startD) {
         // Overnight shift
         endD.setDate(endD.getDate() + 1);
@@ -1826,7 +2105,8 @@ function saveManualClock() {
         mealAllowance: mealAllowance,
         baseEarnings: baseEarnings,
         earnings: earnings,
-        isManual: true
+        isManual: true,
+        createdAt: new Date().toISOString()
     };
 
     state.records.unshift(record);
@@ -1835,7 +2115,10 @@ function saveManualClock() {
     renderHistory();
     updateStats();
     closeModal();
-    showToast(`✓ Đã thêm ca làm thủ công: ${formatCurrency(earnings)}`, 'success');
+    
+    const isFuture = startD > new Date();
+    const typeLabel = isFuture ? 'Chấm công trước' : 'Chấm công bù';
+    showToast(`✓ Đã thêm ca (${typeLabel}): ${formatCurrency(earnings)}`, 'success');
 }
 
 // Handle resize for chart

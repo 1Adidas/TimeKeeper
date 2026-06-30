@@ -803,9 +803,10 @@ body {
     font-size: 0.82rem;
     font-weight: 600;
     margin-bottom: 3px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
 }
 
 .history-time-range {

@@ -27,37 +27,71 @@ const MONTHS_VI = ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9'
 const FULL_WEEKDAYS_VI = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
 
 // ===== COMPANION DIALOGUES =====
-const WELCOME_MESSAGES = [
-    "Chúc bạn một ca làm việc suôn sẻ nhé! Cố lên nào! 💪",
-    "Vào ca rồi nè! Chúc bạn làm việc nhẹ nhàng, khách thương nha! 🌅",
-    "Mọi chuyện hôm nay sẽ tốt đẹp thôi, cùng nhau cố gắng nha! ✨",
-    "Bắt đầu ca làm thôi! Chúc bạn ngập trạng năng lượng tích cực! 🔥",
-    "Hôm nay hãy làm việc thật vui vẻ nhé, tớ luôn đồng hành cùng bạn! 🥰",
-    "Ca này sẽ trôi qua nhanh thôi, chúc bạn làm việc thoải mái nha! 🍀",
-    "Fighting! Một ca làm việc đầy hiệu quả và nhiều niềm vui nhé! ✌️",
-    "Cửa hàng mở cửa rồi, chúc bạn đón những vị khách dễ mến đầu tiên! 🏬",
-    "Chúc bạn làm việc thật tập trung và không bị mệt mỏi nha! 🧠",
-    "Ca làm mới bắt đầu, hãy nở một nụ cười thật tươi nào! 😊",
-    "Chúc bạn một ngày làm việc hanh thông, không gặp rắc rối gì nha! 🌈",
-    "Bắt đầu ca thôi! Đừng quên uống nước đầy đủ trong ca làm nhé! 💧",
-    "Hôm nay làm việc vui vẻ nha, tớ sẽ canh giờ thật chuẩn cho bạn! ⏱️",
-    "Chúc bạn làm việc thật thoải mái, thời gian sẽ trôi nhanh thôi! ⏳",
-    "Bắt đầu chiến đấu thôi! Chúc ca làm việc nhiều may mắn! 🌟",
-    "Vào ca an lành! Chúc bạn có một ngày làm việc thật trọn vẹn! ❤️",
-    "Ca này chúc bạn hoàn thành xuất sắc mọi công việc nha! 🎯",
-    "Cố gắng lên nhé! Tớ tin hôm nay bạn sẽ làm việc rất tốt! 👍",
-    "Khởi đầu ca làm tràn đầy hứng khởi nào bạn ơi! 🚀",
-    "Chúc bạn có một ca làm việc thật nhiều tiếng cười và ít áp lực! 🍃",
-    "Vào ca rồi, chúc bạn gặp những người đồng nghiệp dễ thương hôm nay! 🤝",
-    "Chúc ca làm việc hôm nay nhẹ nhàng như một cơn gió mát! 🌬️",
-    "Ca làm việc mới, cơ hội mới, chúc bạn làm việc thật vui! ☀️",
-    "Vào ca thôi! Cứ bình tĩnh làm việc, mọi thứ sẽ ổn thôi nha! 🧘",
-    "Chúc bạn có một ca làm việc ngập tràn niềm vui và động lực! 🎈",
-    "Chiến thôi bạn ơi! Chúc bạn có một phiên làm việc thật năng suất! 💎",
-    "Bắt đầu ca làm, chúc bạn luôn giữ được sự tỉnh táo và tươi vui! ☕",
-    "Hãy làm việc thật tốt hôm nay nhé, tớ đợi bạn hoàn thành ca! 🙆",
-    "Vào ca suôn sẻ! Chúc bạn có một ngày làm việc thật ý nghĩa! 🌸",
-    "Chúc bạn làm việc vui vẻ, không bị stress và luôn giữ nụ cười nhé! 🌻"
+const WELCOME_MORNING_MESSAGES = [
+    "Chào buổi sáng! Ly cà phê sáng đã sẵn sàng, chúc bạn ca sáng tràn đầy năng lượng! ☕🌅",
+    "Bắt đầu ngày mới thôi! Chúc bạn ca sáng nhẹ nhàng, gặp những vị khách dễ mến nha! ☀️🍃",
+    "Nắng sớm lên rồi, chúc ca sáng làm việc thật hanh thông và nhiều may mắn! 🌅✨",
+    "Hít một hơi thật sâu chào ngày mới! Chúc ca sáng của bạn trôi qua thật nhanh và vui vẻ! 🍃✌️",
+    "Một ngày mới ngập tràn cơ hội! Chúc bạn ca sáng ngập tràn tiếng cười và niềm vui! 🌸",
+    "Good morning! Chúc bạn làm việc tỉnh táo, tràn đầy nhiệt huyết trong ca sáng nay! 🚀",
+    "Cửa hàng mở cửa đón nắng mai rồi, ca sáng nhiều may mắn và năng suất nhé! 🏬🌈",
+    "Chào ngày mới năng động! Chúc bạn ca sáng hanh thông, công việc trôi chảy! 💎🌞",
+    "Bắt đầu ca sáng thảnh thơi nhé! Tớ sẽ canh giờ thật chuẩn cho ngày mới của bạn! ⏱️🍀",
+    "Chúc bạn ca sáng ngập tràn hứng khởi, làm việc hiệu quả và không mệt mỏi! 👍",
+    "Một ca sáng tuyệt vời đang chờ đón! Cố lên nhé, ngày mới tốt lành! 🌟",
+    "Chào buổi sáng tốt lành! Chúc bạn làm việc thoải mái và có nhiều năng lượng tích cực! 🌻",
+    "Hãy bắt đầu ca sáng bằng một nụ cười thật tươi nào! Fighting! 😊💪",
+    "Chúc bạn ca sáng làm việc nhẹ nhàng như gió ban mai nhé! 🌬️❤️",
+    "Sáng nay cùng cố gắng nhé! Tớ luôn đồng hành cùng bạn suốt cả ngày! 🥰"
+];
+
+const WELCOME_NOON_MESSAGES = [
+    "Trưa nắng rồi, chúc bạn vào ca trưa thật mát mẻ và giữ sức khỏe tốt nhé! 🌤️💧",
+    "Bắt đầu ca trưa thôi! Chúc ca làm việc nhẹ nhàng, rảnh rỗi để tí ăn trưa ngon miệng! 🍛🍀",
+    "Nắng trưa gay gắt nhớ uống nước đầy đủ nha, chúc bạn ca trưa bình an! 🥤🌟",
+    "Vào ca giữa ngày rồi nè, chúc ca trưa trôi qua êm đềm và ít áp lực nhé! 🍃🧘",
+    "Chúc bạn ca trưa làm việc thật thong thả, khách hàng thương yêu, đồng nghiệp dễ mến! 🤝",
+    "Nắng gắt thế này vào ca nhớ giữ gìn sức khỏe nha, chúc ca trưa mát mẻ! 🌬️🏬",
+    "Chúc ca trưa của bạn nhẹ nhàng và trôi qua thật nhanh để sớm được nghỉ ngơi! ⏳",
+    "Bắt đầu ca trưa hứng khởi nào! Làm việc thong thả và luôn cười tươi nhé! 😊🎯",
+    "Giờ trưa rồi, vào ca nhẹ nhàng, tớ luôn ở đây tính giờ chuẩn xác cho bạn! ⏱️❤️",
+    "Cố gắng lên nhé! Chúc ca trưa của bạn ngập tràn niềm vui và may mắn! 🌟👍",
+    "Chúc ca làm việc giữa ngày của bạn thật suôn sẻ, không gặp rắc rối gì nha! 🌈",
+    "Vào ca trưa thôi! Giữ tinh thần thoải mái để hoàn thành tốt công việc nè! 🧘💎"
+];
+
+const WELCOME_AFTERNOON_MESSAGES = [
+    "Nắng chiều đã dịu, chúc bạn ca chiều mát mẻ và làm việc thật năng suất nha! ☀️🍃",
+    "Bắt đầu ca chiều thôi! Một buổi chiều tràn đầy nhiệt huyết và tiếng cười nhé! 🚀",
+    "Chúc ca chiều làm việc thảnh thơi, công việc hanh thông, khách hàng mến mộ! 🏬✨",
+    "Vào ca chiều rồi nè! Cố lên nhé, thời gian ca chiều sẽ trôi qua nhanh thôi! ⏱️🍀",
+    "Chúc bạn ca chiều nhẹ nhàng, thoải mái và tràn đầy năng lượng tích cực! 🔥",
+    "Buổi chiều dịu mát rồi, vào ca tràn đầy năng lượng và làm việc thật vui vẻ nha! 🌈🌞",
+    "Chúc ca chiều hoàn thành xuất sắc mọi công việc được giao nhé! 🎯👍",
+    "Cố gắng lên nào! Một buổi chiều ngập tràn tiếng cười và ít áp lực nha! 🌻",
+    "Bắt đầu ca chiều thôi! Tớ sẽ đồng hành canh giờ giúp bạn làm việc thật thoải mái! ⏳🥰",
+    "Chúc bạn ca chiều thong thả, công việc suôn sẻ và gặp nhiều may mắn! 🌟",
+    "Nụ cười chiều mát mẻ nào! Chúc bạn làm việc vui vẻ và tràn đầy hứng khởi! 😊💎",
+    "Chúc ca chiều của bạn trôi qua thật êm đềm và nhẹ nhàng như gió thu! 🌬️❤️",
+    "Ca chiều năng động nhé! Cố gắng hoàn thành tốt để tối về nghỉ ngơi xả láng! 🔋"
+];
+
+const WELCOME_EVENING_MESSAGES = [
+    "Phố lên đèn rồi, chúc bạn vào ca tối mát mẻ và làm việc thật thoải mái nha! 🌙✨",
+    "Bắt đầu ca tối thôi! Làm việc chăm chỉ để tối về ngủ một giấc thật ngon nhé! 🛌🍀",
+    "Đêm muộn rồi, vào ca nhớ giữ ấm và uống nước ấm nhé. Cố lên bạn ơi! ☕🌙",
+    "Chúc ca tối của bạn trôi qua thật nhanh, nhẹ nhàng và bình yên nhé! ⏳🧘",
+    "Vào ca tối rồi, chúc bạn gặp những vị khách dễ tính cuối ngày nha! 🏬🌸",
+    "Chúc bạn ca tối làm việc vui vẻ, không bị mệt mỏi và luôn tỉnh táo! 🧠⚡",
+    "Trời tối mát mẻ rồi, vào ca với tinh thần thoải mái nhất nào! Fighting! 💪🌌",
+    "Ca tối an lành nhé! Cứ thong thả làm việc, tớ sẽ luôn đồng hành bên bạn! 🥰⏱️",
+    "Chúc bạn hoàn thành ca tối thật xuất sắc để sớm về nhà nghỉ ngơi! 🏡",
+    "Cố gắng lên nhé! Ca tối mát mẻ sẽ trôi qua nhanh như một cái chớp mắt thôi! 😉🌟",
+    "Chúc ca đêm/tối của bạn thật êm đềm, không gặp rắc rối hay áp lực gì nha! 🌈",
+    "Vào ca tối thôi! Hãy luôn giữ nụ cười và tinh thần lạc quan nhé! 😊🌻",
+    "Chúc bạn ca tối làm việc suôn sẻ, tràn đầy niềm vui và may mắn! 🍀👍",
+    "Ca làm tối bắt đầu rồi, giữ sức khỏe và làm việc thật tốt nhé bạn hiền! 🤝❤️",
+    "Cố gắng nốt ca tối nay nhé! Một giấc ngủ ngon lành đang chờ đón bạn phía trước! 🛌💤"
 ];
 
 const WARNING_MESSAGES = [
@@ -126,41 +160,23 @@ const SUMMARY_MESSAGES = [
     "Hết ca làm rồi! Chúc bạn có những phút giây nghỉ ngơi thật thoải mái! 🍀"
 ];
 
-const BUTTON_TEXTS = [
-    "Oki cậu luôn ❤️",
-    "Thương ghê, cám ơn nha 🥰",
-    "Tớ biết rồi, cảm ơn cậu! 😘",
-    "Cố lên cùng tớ nhé! 💪",
-    "Tớ nghe rồi ạ! 🌸",
-    "Yêu thế, cám ơn nha! 💕",
-    "Nghe ấm lòng ghê! 🥺",
-    "Đồng ý luôn nè! 👌",
-    "Tớ biết rồi nhé! 😉",
-    "Cảm ơn cậu nhiều nha! 🌻",
-    "Hihi oki cậu! 😊",
-    "Được nghỉ là vui rồi! 💃",
-    "Cố nốt thui nào! 🚀",
-    "Cảm ơn lời chúc nha! 🌈",
-    "Tớ sẽ cố gắng! 💎",
-    "Ấm áp quá đi! 🥰",
-    "Biết rồi nha bạn hiền! 🤝",
-    "Oki oki cậu! ✌️",
-    "Cậu cũng thế nhé! 🍀",
-    "Tuyệt vời ông mặt trời! ☀️",
-    "Nghe ngọt ngào ghê! 🍬",
-    "Hứa sẽ cố gắng! 🤝",
-    "Cảm động ghê luôn! 🥺❤️",
-    "Chuẩn luôn cậu ơi! 👍",
-    "Tớ nghe đây ạ! 🙆",
-    "Yêu cậu quá đi! 😘💖",
-    "Sắp được về rồi, yay! 🎉",
-    "Cảm ơn cậu tiếp sức! 🔋",
-    "Oki cậu nha! 🎈",
-    "Về thôi về thôi! 🏡"
-];
+
 
 function getRandomItem(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function getWelcomeMessage() {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 11) {
+        return getRandomItem(WELCOME_MORNING_MESSAGES);
+    } else if (hour >= 11 && hour < 14) {
+        return getRandomItem(WELCOME_NOON_MESSAGES);
+    } else if (hour >= 14 && hour < 18) {
+        return getRandomItem(WELCOME_AFTERNOON_MESSAGES);
+    } else {
+        return getRandomItem(WELCOME_EVENING_MESSAGES);
+    }
 }
 
 // ===== STATE =====
@@ -405,9 +421,9 @@ function clockIn() {
     updateHomeUI();
     showToast('Đã vào ca thành công!', 'success');
 
-    // Send welcome notification immediately with action buttons
+    // Send welcome notification immediately based on time of day
     if (state.settings.notificationsEnabled) {
-        const msg = getRandomItem(WELCOME_MESSAGES);
+        const msg = getWelcomeMessage();
         sendBrowserNotification(
             `🌅 TimeKeeper - Vào ca vui vẻ!`,
             msg,
@@ -2436,7 +2452,7 @@ function sendBrowserNotification(title, body, tag = null, silent = false) {
     if (!state.settings.notificationsEnabled) return;
     if (!("Notification" in window)) return;
     
-    const cuteBtnText = getRandomItem(BUTTON_TEXTS);
+
 
     const options = {
         body: body,
@@ -2452,14 +2468,7 @@ function sendBrowserNotification(title, body, tag = null, silent = false) {
         options.vibrate = [300, 110, 300];
     }
 
-    if (tag !== 'shift-progress') {
-        options.actions = [
-            {
-                action: 'close',
-                title: cuteBtnText
-            }
-        ];
-    }
+
 
     if (Notification.permission === "granted") {
         if ('serviceWorker' in navigator) {

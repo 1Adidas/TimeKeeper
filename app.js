@@ -124,7 +124,27 @@ const WARNING_MESSAGES = [
     "Sắp kết thúc ca rồi! Nghĩ đến lúc được nghỉ ngơi để lấy động lực nhé! 🛌",
     "Chỉ còn 30 phút nữa thôi! Cùng đếm ngược thời gian để ra ca nào! ⏰",
     "Nửa giờ cuối cùng! Hãy hoàn thành công việc thật trọn vẹn nha! 🚀",
-    "Cố lên nhé! Sắp được cởi bỏ đồng phục và về nhà thư giãn rồi! 👕"
+    "Cố lên nhé! Sắp được cởi bỏ đồng phục và về nhà thư giãn rồi! 👕",
+    "Gần hết ca rồi, chuẩn bị cất dọn đồ đạc dần đi nhé! 🎒",
+    "Còn chút xíu nữa thôi, kiểm tra lại sổ sách/công việc nha! 📋",
+    "Nửa tiếng cuối trôi nhanh lắm, chuẩn bị tinh thần ra ca thôi! ⏱️",
+    "Cảm ơn vì đã kiên trì đến tận giờ phút này, cố lên nốt nhé! 💖",
+    "Nghĩ đến ly trà sữa/món ăn ngon sau ca để lấy động lực nào! 🧋",
+    "Sắp kết thúc một phiên làm việc năng suất rồi, tự hào về cậu! 🏆",
+    "30 phút cuối cùng, làm việc cẩn thận để bàn giao thật tốt nhé! 👍",
+    "Đừng quên giãn cơ một chút cho đỡ mỏi lưng nha bạn hiền! 🧘",
+    "Cố gắng nốt 30 phút nữa là được ôm giường ngủ rồi! 🛌",
+    "Mọi mệt mỏi sắp qua rồi, chỉ còn vài phút đếm ngược thôi! ⏳",
+    "Hôm nay cậu làm việc xuất sắc lắm, chuẩn bị đón nhận phần thưởng nghỉ ngơi nào! 🎁",
+    "30 phút nữa thôi là cởi bỏ đồng phục và đi chơi thôi! 👕🎉",
+    "Sắp hết ca rồi, chuẩn bị tắt máy và dọn dẹp cửa hàng thôi nào! 🏬🧹",
+    "Cố lên nốt nha, tớ đang đếm ngược từng giây để chúc mừng cậu ra ca đây! ⏰",
+    "Nửa tiếng cuối, hãy cười tươi lên vì ngày làm việc sắp kết thúc rồi! 😊",
+    "Tớ biết chân cậu đang mỏi lắm, cố lên nốt vài bước nữa thôi nha! 🚶",
+    "Sắp được tự do rồi, cố gắng giữ an toàn và làm việc cẩn thận nốt nhé! 🛡️",
+    "Một ngày dài vất vả sắp khép lại, chuẩn bị ra ca thôi nào! 🏁",
+    "Cố gắng lên nhé bạn thân mến, phần khó khăn nhất đã qua rồi! 🌈",
+    "30 phút nữa thôi, về nhà tắm nước nóng và thư giãn đầu óc thôi nào! 🛀"
 ];
 
 const SUMMARY_MESSAGES = [
@@ -157,7 +177,80 @@ const SUMMARY_MESSAGES = [
     "Hôm nay vất vả rồi! Chúc bạn ăn một bữa thật ngon miệng và ấm cúng! 🍛",
     "Bạn đã làm việc cực kỳ xuất sắc! Hãy tận hưởng thời gian rảnh rỗi của mình nhé! 🎈",
     "Cảm ơn bạn vì đã luôn cố gắng hết mình! Hãy ngủ một giấc thật sâu nhé! 🛌",
-    "Hết ca làm rồi! Chúc bạn có những phút giây nghỉ ngơi thật thoải mái! 🍀"
+    "Hết ca làm rồi! Chúc bạn có những phút giây nghỉ ngơi thật thoải mái! 🍀",
+    "🏁 Đã kết ca! Hôm nay cậu đã làm việc cực kỳ chăm chỉ rồi, về nghỉ ngơi thôi! 🏡",
+    "Cậu hôm nay thật tuyệt vời! Cảm ơn vì đã luôn kiên cường hoàn thành ca! 👏",
+    "Hãy tự hào vì những gì cậu đã cống hiến hôm nay nhé, về xả hơi thôi! 💖",
+    "Chúc mừng hoàn thành ca làm! Đi ăn món gì thật ngon để bù đắp năng lượng nhé! 🍲",
+    "Tắt app và cất hết mọi lo toan công việc đi thôi, thời gian nghỉ ngơi đến rồi! 🔌",
+    "Cậu đã làm việc quá tốt hôm nay! Hãy tự thưởng cho mình một buổi tối thật chill! 🎮",
+    "Cảm ơn cậu đã luôn nỗ lực! Giờ là lúc để cơ thể được thư giãn hoàn toàn! 🛌",
+    "Tuyệt vời quá, kết ca rồi! Về nhà ôm người thân hoặc thú cưng thôi! 🫂",
+    "Một ca làm việc thành công tốt đẹp! Nghỉ ngơi thật tốt để chuẩn bị cho ca sau nhé! 🔋",
+    "Đi làm vất vả rồi, nhớ uống một ly nước mát và ăn uống đầy đủ nha! 🥤",
+    "Cậu đã vượt qua ca làm hôm nay một cách xuất sắc, thật đáng ngưỡng mộ! 🏆",
+    "Chúc cậu có một khoảng thời gian nghỉ ngơi thật yên bình và hạnh phúc! 🍃",
+    "Cảm ơn sự tận tụy của cậu hôm nay! Chúc cậu ngủ thật ngon và có giấc mơ đẹp! 🌙",
+    "Hôm nay vất vả cho cậu nhiều rồi, đi ngủ sớm để phục hồi năng lượng nhé! 😴",
+    "Kết thúc ca làm suôn sẻ! Tận hưởng trọn vẹn thời gian rảnh rỗi của mình đi nào! 🎈",
+    "Cậu đã làm việc cực kỳ xuất sắc! Tớ rất tự hào vì được đồng hành cùng cậu! ❤️",
+    "Hết ca rồi, chúc cậu có một tối thật ấm áp và thư giãn bên gia đình! 🌼",
+    "Hôm nay mệt rồi, nhớ ăn một bữa thật ấm cúng và đầy đủ dưỡng chất nhé! 🍛",
+    "Ca làm đã hoàn tất xuất sắc! Chúc cậu có những phút giây nghỉ ngơi thật thoải mái và trọn vẹn! 🍀",
+    "Hôm nay làm việc quá xuất sắc rồi bạn ơi, cất đồ đạc và về nhà nghỉ ngơi xả láng nhé! 🥂"
+];
+
+const BUTTON_TEXTS = [
+    "Oki cậu luôn ❤️",
+    "Thương ghê, cảm ơn cậu nha 🥰",
+    "Tớ biết rồi, cảm ơn cậu nhiều! 😘",
+    "Cùng cố gắng với tớ nhé! 💪",
+    "Tớ nghe rõ rồi nè! 🌸",
+    "Đáng yêu quá, cảm ơn nha! 💕",
+    "Nghe ấm lòng ghê luôn! 🥺",
+    "Đồng ý luôn nè! 👌",
+    "Tớ nhớ rồi nhé! 😉",
+    "Cảm ơn cậu nhiều nha! 🌻",
+    "Hihi oki cậu! 😊",
+    "Được làm việc cùng cậu là vui rồi! 💃",
+    "Cố gắng lên nào tớ ơi! 🚀",
+    "Cám ơn lời chúc ngọt ngào nha! 🌈",
+    "Tớ sẽ làm thật tốt! 💎",
+    "Ấm áp quá đi mất! 🥰",
+    "Biết rồi nha bạn hiền! 🤝",
+    "Oki oki cậu! ✌️",
+    "Cậu cũng thế nhé! 🍀",
+    "Tuyệt vời ông mặt trời! ☀️",
+    "Nghe ngọt ngào quá đi! 🍬",
+    "Hứa là sẽ chăm chỉ! 🤝",
+    "Cảm động ghê luôn nè! 🥺❤️",
+    "Chuẩn luôn cậu ơi! 👍",
+    "Tớ sẵn sàng rồi! 🙆",
+    "Yêu cậu quá đi mất! 😘💖",
+    "Năng lượng tràn trề luôn! 🎉",
+    "Cảm ơn cậu đã tiếp sức! 🔋",
+    "Oki cậu nha! 🎈",
+    "Nghe lời cậu luôn nè! 🧸",
+    "Cảm ơn người đồng hành đáng yêu! 💖",
+    "Nhận được lời chúc là vui cả ca! 🌟",
+    "Cảm ơn cậu đã quan tâm nha! 🤍",
+    "Tớ sẽ uống nước đầy đủ! 🥤",
+    "Cậu canh giờ siêu chuẩn luôn! ⏱️",
+    "Nghe xong hết mỏi mệt luôn! 🔋",
+    "Ca này tớ cân được hết! 💪",
+    "Có cậu nhắc nhở là nhất rồi! 🥇",
+    "Dễ thương xỉu luôn á! 🥰",
+    "Tớ sẽ chú ý giữ sức khỏe! 🍀",
+    "Hihi yêu thương đong đầy luôn! 💗",
+    "Quyết tâm làm việc chăm chỉ! 🎯",
+    "Cảm ơn cậu đã ở bên tớ! 🫂",
+    "Vui vẻ cả ca làm luôn nha! 🌞",
+    "Học tập và làm việc hết mình! 📚",
+    "Luôn lạc quan yêu đời nè! 🌸",
+    "Có cậu là ca này suôn sẻ rồi! ✨",
+    "Tớ chuẩn bị dọn dẹp đây! 🧹",
+    "Sắp hoàn thành rồi, cố lên! 🏁",
+    "Về nhà nghỉ ngơi thôi nào! 🏡"
 ];
 
 
@@ -2452,7 +2545,7 @@ function sendBrowserNotification(title, body, tag = null, silent = false) {
     if (!state.settings.notificationsEnabled) return;
     if (!("Notification" in window)) return;
     
-
+    const cuteBtnText = getRandomItem(BUTTON_TEXTS);
 
     const options = {
         body: body,
@@ -2466,6 +2559,15 @@ function sendBrowserNotification(title, body, tag = null, silent = false) {
 
     if (!silent) {
         options.vibrate = [300, 110, 300];
+    }
+
+    if (tag === 'shift-welcome' || tag === 'shift-warning' || tag === 'shift-summary') {
+        options.actions = [
+            {
+                action: 'close',
+                title: cuteBtnText
+            }
+        ];
     }
 
 

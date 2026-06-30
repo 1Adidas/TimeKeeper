@@ -66,6 +66,13 @@ function init() {
         notiToggle.checked = state.settings.notificationsEnabled || false;
     }
 
+    // Register Service Worker for PWA / Mobile Notifications
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('Service Worker registered successfully:', reg.scope))
+            .catch(err => console.error('Service Worker registration failed:', err));
+    }
+
     // Restore current session timer if active
     if (state.currentSession) {
         startTimer();
@@ -2205,14 +2212,25 @@ function toggleNotifications() {
 function sendBrowserNotification(title, body) {
     if (!state.settings.notificationsEnabled) return;
     if (!("Notification" in window)) return;
+    
+    const options = {
+        body: body,
+        icon: "/favicon.ico",
+        badge: "/favicon.ico",
+        vibrate: [100, 50, 100]
+    };
+
     if (Notification.permission === "granted") {
-        try {
-            new Notification(title, {
-                body: body,
-                icon: "/favicon.ico"
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(registration => {
+                registration.showNotification(title, options)
+                    .catch(e => {
+                        console.warn("Service Worker notification failed, falling back:", e);
+                        new Notification(title, options);
+                    });
             });
-        } catch (e) {
-            console.error("Error displaying notification:", e);
+        } else {
+            new Notification(title, options);
         }
     }
 }

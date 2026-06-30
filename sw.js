@@ -1,3 +1,4 @@
+// Version 2.1
 self.addEventListener('install', (event) => {
     self.skipWaiting();
 });

@@ -400,6 +400,13 @@ function clockIn() {
     };
 
     saveData(STORAGE_KEYS.CURRENT, state.currentSession);
+    
+    // Diagnostic toast to debug phone notification state
+    const notiPermission = window.Notification ? Notification.permission : 'Không hỗ trợ';
+    const notiEnabled = state.settings.notificationsEnabled ? 'Bật' : 'Tắt';
+    const swSupported = ('serviceWorker' in navigator) ? 'Có' : 'Không';
+    showToast(`🔍 Chẩn đoán: Quyền: ${notiPermission} | Nút gạt: ${notiEnabled} | SW: ${swSupported}`, 'info');
+
     startTimer();
     updateHomeUI();
     showToast('Đã vào ca thành công!', 'success');
@@ -2493,18 +2500,31 @@ function sendBrowserNotification(title, body, tag = null, silent = false) {
                             });
                     }).catch(err => {
                         console.error("SW ready failed, falling back:", err);
-                        new Notification(title, options);
+                        showToast(`Lỗi SW Ready Promise: ${err.message || err}`, 'error');
+                        try {
+                            new Notification(title, options);
+                        } catch (e) {
+                            console.error("Fallback non-SW failed:", e);
+                            showToast(`Lỗi hiển thị (Non-SW Fallback): ${e.message || e}`, 'error');
+                        }
                     });
                 }
             }).catch(err => {
                 console.error("getRegistration failed, falling back:", err);
-                new Notification(title, options);
+                showToast(`Lỗi getRegistration: ${err.message || err}`, 'error');
+                try {
+                    new Notification(title, options);
+                } catch (e) {
+                    console.error("Fallback non-SW failed:", e);
+                    showToast(`Lỗi hiển thị (Non-SW Fallback): ${e.message || e}`, 'error');
+                }
             });
         } else {
             try {
                 new Notification(title, options);
             } catch (e) {
                 console.error("Non-SW Notification failed:", e);
+                showToast(`Lỗi hiển thị (Non-SW): ${e.message || e}`, 'error');
             }
         }
     }

@@ -241,6 +241,19 @@ function clockIn() {
     showToast('Đã vào ca thành công!', 'success');
 }
 
+function getRecordMealAllowance(record) {
+    if (record.mealAllowance !== undefined) return record.mealAllowance;
+    const hours = record.durationHours;
+    if (hours >= 16) return 40000;
+    if (hours >= 8) return 20000;
+    return 0;
+}
+
+function getRecordBaseEarnings(record) {
+    if (record.baseEarnings !== undefined) return record.baseEarnings;
+    return record.earnings - getRecordMealAllowance(record);
+}
+
 function clockOut() {
     if (!state.currentSession) {
         showToast('Bạn chưa vào ca!', 'warning');
@@ -251,7 +264,17 @@ function clockOut() {
     const start = new Date(state.currentSession.startTime);
     const durationMs = now - start;
     const durationHours = durationMs / (1000 * 60 * 60);
-    const earnings = Math.round(durationHours * state.currentSession.hourlyRate);
+    
+    // Meal allowance calculation
+    let mealAllowance = 0;
+    if (durationHours >= 16) {
+        mealAllowance = 40000;
+    } else if (durationHours >= 8) {
+        mealAllowance = 20000;
+    }
+    
+    const baseEarnings = Math.round(durationHours * state.currentSession.hourlyRate);
+    const earnings = baseEarnings + mealAllowance;
 
     const record = {
         id: Date.now().toString(),
@@ -263,6 +286,8 @@ function clockOut() {
         durationMs: durationMs,
         durationHours: parseFloat(durationHours.toFixed(2)),
         hourlyRate: state.currentSession.hourlyRate,
+        mealAllowance: mealAllowance,
+        baseEarnings: baseEarnings,
         earnings: earnings
     };
 
@@ -597,10 +622,12 @@ function renderHistory() {
                 const endDate = new Date(record.endTime);
                 const endTimeStr = formatTime(endDate);
                 const durationStr = formatDurationShort(record.durationMs);
+                const mealAllowance = getRecordMealAllowance(record);
+                const mealBadge = mealAllowance > 0 ? `<span class="history-meal-badge" style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.65rem; background: rgba(34, 197, 94, 0.12); color: var(--accent-green); border: 1px solid rgba(34, 197, 94, 0.2); padding: 2px 6px; border-radius: 6px; margin-left: 6px;">🍴 +${formatCurrencyShort(mealAllowance)} ăn</span>` : '';
                 return `
                     <div class="history-item" style="animation-delay: ${Math.min((gIndex*0.1) + index * 0.05, 0.5)}s; margin-bottom: 8px;">
                         <div class="history-info" style="margin-left: 0;">
-                            <div class="history-shift-name">${record.shiftEmoji || '📋'} ${record.shiftName}</div>
+                            <div class="history-shift-name">${record.shiftEmoji || '📋'} ${record.shiftName}${mealBadge}</div>
                             <div class="history-time-range">${timeStr} → ${endTimeStr}</div>
                         </div>
                         <div class="history-right">
@@ -1002,6 +1029,7 @@ function renderBreakdown(records, purchases, ticks, tickMilestones) {
                 date: date,
                 shiftEarnings: 0,
                 bonusEarnings: 0,
+                mealAllowance: 0,
                 hours: 0,
                 shifts: 0,
                 bonuses: [],
@@ -1018,6 +1046,7 @@ function renderBreakdown(records, purchases, ticks, tickMilestones) {
         daily[key].shiftEarnings += r.earnings;
         daily[key].hours += r.durationHours;
         daily[key].shifts++;
+        daily[key].mealAllowance += getRecordMealAllowance(r);
     });
 
     // 2. Group purchases (bonuses)
@@ -1090,6 +1119,9 @@ function renderBreakdown(records, purchases, ticks, tickMilestones) {
 
         // Render bonus tags/badges for this day
         let tagsHtml = '';
+        if (entry.mealAllowance > 0) {
+            tagsHtml += `<span class="breakdown-bonus-badge" style="padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; background: rgba(34, 197, 94, 0.12); color: var(--accent-green); border: 1px solid rgba(34, 197, 94, 0.2); display: inline-flex; align-items: center; gap: 4px; margin-right: 4px; margin-bottom: 4px;">🍴 Trợ cấp ăn (+${formatCurrencyShort(entry.mealAllowance)})</span>`;
+        }
         if (entry.bonuses.length > 0 || entry.ticks.length > 0) {
             tagsHtml += entry.bonuses.map(b => 
                 `<span class="breakdown-bonus-badge" style="padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; background: ${b.amount >= 0 ? 'rgba(6, 182, 212, 0.12)' : 'rgba(239, 68, 68, 0.12)'}; color: ${b.amount >= 0 ? 'var(--accent-cyan)' : 'var(--accent-red)'}; border: 1px solid ${b.amount >= 0 ? 'rgba(6, 182, 212, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; display: inline-flex; align-items: center; gap: 4px; margin-right: 4px; margin-bottom: 4px;">${b.emoji} ${b.name} (${b.amount >= 0 ? '+' : ''}${formatCurrencyShort(b.amount)})</span>`
@@ -1098,8 +1130,8 @@ function renderBreakdown(records, purchases, ticks, tickMilestones) {
             tagsHtml += entry.ticks.map(t =>
                 `<span class="breakdown-tick-badge" style="padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; background: ${t.type === 'good' ? 'rgba(34, 197, 94, 0.12)' : 'rgba(239, 68, 68, 0.12)'}; color: ${t.type === 'good' ? 'var(--accent-green)' : 'var(--accent-red)'}; border: 1px solid ${t.type === 'good' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; display: inline-flex; align-items: center; gap: 4px; margin-right: 4px; margin-bottom: 4px;">${t.type === 'good' ? '👍' : '👎'} Tick ${t.type === 'good' ? 'tốt' : 'xấu'}${t.note ? `: ${t.note}` : ''}</span>`
             ).join('');
-        } else {
-            tagsHtml = `<span class="breakdown-bonus-badge none" style="padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; background: rgba(255, 255, 255, 0.04); color: var(--text-muted); border: 1px solid rgba(255, 255, 255, 0.08); display: inline-flex; align-items: center; gap: 4px; margin-right: 4px; margin-bottom: 4px;">Không có hoạt động khác</span>`;
+        } else if (entry.mealAllowance === 0) {
+            tagsHtml += `<span class="breakdown-bonus-badge none" style="padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; background: rgba(255, 255, 255, 0.04); color: var(--text-muted); border: 1px solid rgba(255, 255, 255, 0.08); display: inline-flex; align-items: center; gap: 4px; margin-right: 4px; margin-bottom: 4px;">Không có hoạt động khác</span>`;
         }
 
         return `
@@ -1660,6 +1692,151 @@ document.addEventListener('DOMContentLoaded', () => {
     init();
     renderBonusSettings();
 });
+
+// ===== MANUAL TIMEKEEPING =====
+function openManualClockModal() {
+    const shiftsOptions = state.shifts.map(s => `<option value="${s.id}">${s.emoji} ${s.name} (${s.start} - ${s.end})</option>`).join('');
+    const freestyleOption = `<option value="freestyle">⏱ Ca Tự Do</option>`;
+    const today = new Date().toLocaleDateString('en-CA'); // Gets YYYY-MM-DD in local time zone
+
+    const bodyHTML = `
+        <div class="manual-clock-form" style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px; text-align: left;">
+            <div class="form-group">
+                <label for="manualShiftSelect" style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 4px; font-weight: 500;">Chọn Ca làm việc</label>
+                <select id="manualShiftSelect" class="form-select" onchange="onManualShiftChange()" style="width:100%; padding: 10px; border-radius: var(--radius-sm); background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none;">
+                    <option value="" disabled selected>-- Chọn ca làm --</option>
+                    ${freestyleOption}
+                    ${shiftsOptions}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="manualDate" style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 4px; font-weight: 500;">Ngày làm việc</label>
+                <input type="date" id="manualDate" value="${today}" class="form-input" style="width:100%; padding: 10px; border-radius: var(--radius-sm); background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none;">
+            </div>
+            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="form-group">
+                    <label for="manualStartTime" style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 4px; font-weight: 500;">Giờ vào ca</label>
+                    <input type="time" id="manualStartTime" class="form-input" style="width:100%; padding: 10px; border-radius: var(--radius-sm); background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none;">
+                </div>
+                <div class="form-group">
+                    <label for="manualEndTime" style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 4px; font-weight: 500;">Giờ ra ca</label>
+                    <input type="time" id="manualEndTime" class="form-input" style="width:100%; padding: 10px; border-radius: var(--radius-sm); background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none;">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="manualRate" style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 4px; font-weight: 500;">Lương theo giờ (₫/giờ)</label>
+                <input type="number" id="manualRate" value="${state.settings.hourlyRate}" class="form-input" style="width:100%; padding: 10px; border-radius: var(--radius-sm); background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none;" min="0">
+            </div>
+        </div>
+    `;
+
+    showModal('Chấm Công Thủ Công', bodyHTML, [
+        { text: 'Hủy', class: 'modal-btn-cancel', action: closeModal },
+        { text: 'Lưu', class: 'modal-btn-confirm', action: saveManualClock }
+    ]);
+}
+
+function onManualShiftChange() {
+    const shiftSelect = document.getElementById('manualShiftSelect');
+    const startInput = document.getElementById('manualStartTime');
+    const endInput = document.getElementById('manualEndTime');
+    const selectedId = shiftSelect.value;
+
+    if (selectedId === 'freestyle') {
+        startInput.value = '';
+        endInput.value = '';
+    } else {
+        const shift = state.shifts.find(s => s.id === selectedId);
+        if (shift) {
+            startInput.value = shift.start;
+            endInput.value = shift.end;
+        }
+    }
+}
+
+function saveManualClock() {
+    const shiftSelect = document.getElementById('manualShiftSelect');
+    const dateInput = document.getElementById('manualDate');
+    const startTimeInput = document.getElementById('manualStartTime');
+    const endTimeInput = document.getElementById('manualEndTime');
+    const rateInput = document.getElementById('manualRate');
+
+    const shiftId = shiftSelect.value;
+    const dateStr = dateInput.value;
+    const startTime = startTimeInput.value;
+    const endTime = endTimeInput.value;
+    const hourlyRate = parseInt(rateInput.value);
+
+    if (!shiftId) {
+        showToast('Vui lòng chọn ca làm việc!', 'warning');
+        return;
+    }
+    if (!dateStr || !startTime || !endTime) {
+        showToast('Vui lòng điền đầy đủ ngày và giờ!', 'warning');
+        return;
+    }
+    if (isNaN(hourlyRate) || hourlyRate <= 0) {
+        showToast('Mức lương không hợp lệ!', 'warning');
+        return;
+    }
+
+    // Parse times
+    let startD = new Date(`${dateStr}T${startTime}`);
+    let endD = new Date(`${dateStr}T${endTime}`);
+
+    if (endD <= startD) {
+        // Overnight shift
+        endD.setDate(endD.getDate() + 1);
+    }
+
+    const durationMs = endD - startD;
+    const durationHours = durationMs / (1000 * 60 * 60);
+
+    // Calculate meal allowance
+    let mealAllowance = 0;
+    if (durationHours >= 16) {
+        mealAllowance = 40000;
+    } else if (durationHours >= 8) {
+        mealAllowance = 20000;
+    }
+
+    const baseEarnings = Math.round(durationHours * hourlyRate);
+    const earnings = baseEarnings + mealAllowance;
+
+    let shiftName, shiftEmoji;
+    if (shiftId === 'freestyle') {
+        shiftName = 'Ca Tự Do (Thủ công)';
+        shiftEmoji = '⏱️';
+    } else {
+        const foundShift = state.shifts.find(s => s.id === shiftId);
+        shiftName = foundShift ? `${foundShift.name} (Thủ công)` : 'Ca làm (Thủ công)';
+        shiftEmoji = foundShift ? foundShift.emoji : '📋';
+    }
+
+    const record = {
+        id: 'manual-' + Date.now(),
+        shiftId: shiftId,
+        shiftName: shiftName,
+        shiftEmoji: shiftEmoji,
+        startTime: startD.toISOString(),
+        endTime: endD.toISOString(),
+        durationMs: durationMs,
+        durationHours: parseFloat(durationHours.toFixed(2)),
+        hourlyRate: hourlyRate,
+        mealAllowance: mealAllowance,
+        baseEarnings: baseEarnings,
+        earnings: earnings,
+        isManual: true
+    };
+
+    state.records.unshift(record);
+    saveData(STORAGE_KEYS.RECORDS, state.records);
+
+    renderHistory();
+    updateStats();
+    closeModal();
+    showToast(`✓ Đã thêm ca làm thủ công: ${formatCurrency(earnings)}`, 'success');
+}
 
 // Handle resize for chart
 window.addEventListener('resize', () => {

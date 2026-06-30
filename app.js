@@ -401,15 +401,23 @@ function clockIn() {
 
     saveData(STORAGE_KEYS.CURRENT, state.currentSession);
     
-    // Diagnostic toast to debug phone notification state
-    const notiPermission = window.Notification ? Notification.permission : 'Không hỗ trợ';
-    const notiEnabled = state.settings.notificationsEnabled ? 'Bật' : 'Tắt';
-    const swSupported = ('serviceWorker' in navigator) ? 'Có' : 'Không';
-    showToast(`🔍 Chẩn đoán: Quyền: ${notiPermission} | Nút gạt: ${notiEnabled} | SW: ${swSupported}`, 'info');
+    // Set notification states for fresh clock in
+    state.lastNotificationUpdate = now.getTime();
+    state.progressNotified = false;
 
     startTimer();
     updateHomeUI();
     showToast('Đã vào ca thành công!', 'success');
+
+    // Send welcome notification immediately with action buttons
+    if (state.settings.notificationsEnabled) {
+        const msg = getRandomItem(WELCOME_MESSAGES);
+        sendBrowserNotification(
+            `🌅 TimeKeeper - Vào ca vui vẻ!`,
+            msg,
+            `shift-welcome`
+        );
+    }
 }
 
 function getRecordMealAllowance(record) {
@@ -473,6 +481,7 @@ function clockOut() {
 
     state.currentSession = null;
     state.lastNotificationUpdate = null;
+    state.progressNotified = null;
     localStorage.removeItem(STORAGE_KEYS.CURRENT);
 
     stopTimer();
@@ -586,11 +595,12 @@ function updateTimerDisplay() {
     if (progressPercent) progressPercent.textContent = `${Math.round(percent)}%`;
     if (progressText) progressText.textContent = progressLabelText;
 
-    // Silent persistent notification progress bar (update every 60 seconds)
+    // Silent persistent notification progress bar (update every 10 seconds for realtime feel)
     if (state.settings.notificationsEnabled) {
         const lastUpdate = state.lastNotificationUpdate || 0;
-        if (now - lastUpdate >= 60000 || !state.lastNotificationUpdate) {
-            const isFirstShow = !state.lastNotificationUpdate;
+        if (now - lastUpdate >= 10000 || !state.lastNotificationUpdate) {
+            const isFirstShow = !state.progressNotified;
+            state.progressNotified = true;
             state.lastNotificationUpdate = now.getTime();
             
             const filledCount = Math.round(percent / 10);
@@ -598,13 +608,7 @@ function updateTimerDisplay() {
             const barStr = '█'.repeat(filledCount) + '░'.repeat(emptyCount);
             
             const notiTitle = `TimeKeeper - Ca: ${state.currentSession.shiftName}`;
-            let notiBody = `⏱️ ${pad(hours)}:${pad(minutes)}:${pad(seconds)} | Lương: ${formatCurrency(Math.round(elapsed / 3600000 * state.currentSession.hourlyRate))}\n[${barStr}] ${Math.round(percent)}% (${progressLabelText})`;
-            
-            if (isFirstShow) {
-                const welcomeMsg = getRandomItem(WELCOME_MESSAGES);
-                notiBody = `${welcomeMsg}\n\n${notiBody}`;
-                showToast('🔔 Đang gửi thông báo tiến trình ra màn hình...', 'info');
-            }
+            const notiBody = `⏱️ ${pad(hours)}:${pad(minutes)}:${pad(seconds)} | Lương: ${formatCurrency(Math.round(elapsed / 3600000 * state.currentSession.hourlyRate))}\n[${barStr}] ${Math.round(percent)}% (${progressLabelText})`;
             
             sendBrowserNotification(notiTitle, notiBody, 'shift-progress', !isFirstShow);
         }

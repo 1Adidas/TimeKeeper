@@ -94,59 +94,6 @@ const WELCOME_EVENING_MESSAGES = [
     "Cố gắng nốt ca tối nay nhé! Một giấc ngủ ngon lành đang chờ đón bạn phía trước! 🛌💤"
 ];
 
-const WARNING_MESSAGES = [
-    "Chỉ còn 30 phút nữa thôi! Cố lên nhé, sắp được về rồi! 😭",
-    "Mỏi nhừ người rồi đúng không? Cố gắng nốt một chút xíu nữa thôi nha! 💪",
-    "Sắp hết ca rồi! Hít một hơi thật sâu và chuẩn bị dọn dẹp thôi! 🧹",
-    "30 phút cuối cùng! Tớ biết bạn đã rất mỏi, cố gắng lên nhé! ❤️",
-    "Sắp được nghỉ ngơi rồi! Cố gắng giữ năng lượng nốt nửa tiếng nha! ⚡",
-    "Nửa giờ nữa thôi là kết thúc ca làm vất vả rồi, cố lên bạn ơi! 🏁",
-    "Chân mỏi mệt rồi phải không? Ngồi nghỉ một chút rồi chiến nốt nha! 🪑",
-    "Ca làm sắp khép lại rồi, hôm nay bạn đã làm rất tốt, cố lên nốt nhé! 🌟",
-    "30 phút nữa thôi là được tự do rồi! Cố lên nào chiến binh! 🛡️",
-    "Cố gắng nốt chút thời gian cuối này nha, sắp được ăn tối/nghỉ ngơi rồi! 🍽️",
-    "Thời gian sắp hết rồi, chuẩn bị bàn giao và ra ca thôi nào! 📋",
-    "Sắp về nhà rồi! Cố lên nốt 30 phút cuối cùng này nhé! 🏡",
-    "Đừng nản lòng nhé, chỉ còn một chút thời gian ngắn ngủi nữa thôi! 🙌",
-    "Tớ biết hôm nay rất mệt, nhưng sắp hoàn thành rồi, cố lên nha! 🥺",
-    "30 phút nữa thôi! Chuẩn bị tinh thần đón nhận thời gian nghỉ ngơi nào! 🎉",
-    "Hít thở thật sâu nào! Sắp được đặt lưng xuống giường nghỉ rồi! 🛌",
-    "Nửa tiếng nữa thôi! Cố gắng duy trì sự tập trung nốt chút nhé! 🎯",
-    "Sắp kết thúc một ngày làm việc dài rồi, cố lên bạn của tớ ơi! 🫂",
-    "Chỉ 30 phút nữa là bạn có thể thở phào nhẹ nhõm rồi! 💨",
-    "Sắp xong rồi! Cảm ơn bạn đã kiên trì suốt cả ca làm việc này! 🙏",
-    "Cố lên nốt nha! Quãng đường vất vả nhất hôm nay sắp qua rồi! 🌈",
-    "Còn 30 phút nữa thôi! Tự thưởng cho mình một chút niềm vui sắp tới nhé! 🍭",
-    "Sắp hết ca rồi, kiểm tra lại đồ đạc và chuẩn bị ra ca thôi nha! 🎒",
-    "Còn chút xíu nữa thôi, cố gắng làm nốt để về nghỉ ngơi trọn vẹn nào! 🔋",
-    "Cố lên bạn ơi, 30 phút cuối trôi nhanh như một cái chớp mắt thôi! 👁️",
-    "Bạn đã làm việc cực kỳ chăm chỉ hôm nay rồi, cố lên nốt nửa tiếng nha! 💎",
-    "Sắp kết thúc ca rồi! Nghĩ đến lúc được nghỉ ngơi để lấy động lực nhé! 🛌",
-    "Chỉ còn 30 phút nữa thôi! Cùng đếm ngược thời gian để ra ca nào! ⏰",
-    "Nửa giờ cuối cùng! Hãy hoàn thành công việc thật trọn vẹn nha! 🚀",
-    "Cố lên nhé! Sắp được cởi bỏ đồng phục và về nhà thư giãn rồi! 👕",
-    "Gần hết ca rồi, chuẩn bị cất dọn đồ đạc dần đi nhé! 🎒",
-    "Còn chút xíu nữa thôi, kiểm tra lại sổ sách/công việc nha! 📋",
-    "Nửa tiếng cuối trôi nhanh lắm, chuẩn bị tinh thần ra ca thôi! ⏱️",
-    "Cảm ơn vì đã kiên trì đến tận giờ phút này, cố lên nốt nhé! 💖",
-    "Nghĩ đến ly trà sữa/món ăn ngon sau ca để lấy động lực nào! 🧋",
-    "Sắp kết thúc một phiên làm việc năng suất rồi, tự hào về cậu! 🏆",
-    "30 phút cuối cùng, làm việc cẩn thận để bàn giao thật tốt nhé! 👍",
-    "Đừng quên giãn cơ một chút cho đỡ mỏi lưng nha bạn hiền! 🧘",
-    "Cố gắng nốt 30 phút nữa là được ôm giường ngủ rồi! 🛌",
-    "Mọi mệt mỏi sắp qua rồi, chỉ còn vài phút đếm ngược thôi! ⏳",
-    "Hôm nay cậu làm việc xuất sắc lắm, chuẩn bị đón nhận phần thưởng nghỉ ngơi nào! 🎁",
-    "30 phút nữa thôi là cởi bỏ đồng phục và đi chơi thôi! 👕🎉",
-    "Sắp hết ca rồi, chuẩn bị tắt máy và dọn dẹp cửa hàng thôi nào! 🏬🧹",
-    "Cố lên nốt nha, tớ đang đếm ngược từng giây để chúc mừng cậu ra ca đây! ⏰",
-    "Nửa tiếng cuối, hãy cười tươi lên vì ngày làm việc sắp kết thúc rồi! 😊",
-    "Tớ biết chân cậu đang mỏi lắm, cố lên nốt vài bước nữa thôi nha! 🚶",
-    "Sắp được tự do rồi, cố gắng giữ an toàn và làm việc cẩn thận nốt nhé! 🛡️",
-    "Một ngày dài vất vả sắp khép lại, chuẩn bị ra ca thôi nào! 🏁",
-    "Cố gắng lên nhé bạn thân mến, phần khó khăn nhất đã qua rồi! 🌈",
-    "30 phút nữa thôi, về nhà tắm nước nóng và thư giãn đầu óc thôi nào! 🛀"
-];
-
 const SUMMARY_MESSAGES = [
     "Hôm nay bạn đã làm việc cực kỳ vất vả và chăm chỉ rồi. Về nghỉ ngơi thôi! 🎉",
     "Cảm ơn bạn vì sự nỗ lực tuyệt vời hôm nay! Về nhà ăn thật ngon nhé! 🥰",
@@ -198,6 +145,57 @@ const SUMMARY_MESSAGES = [
     "Hôm nay mệt rồi, nhớ ăn một bữa thật ấm cúng và đầy đủ dưỡng chất nhé! 🍛",
     "Ca làm đã hoàn tất xuất sắc! Chúc cậu có những phút giây nghỉ ngơi thật thoải mái và trọn vẹn! 🍀",
     "Hôm nay làm việc quá xuất sắc rồi bạn ơi, cất đồ đạc và về nhà nghỉ ngơi xả láng nhé! 🥂"
+];
+
+const BUTTON_TEXTS_MORNING = [
+    "Cà phê thôi! ☕🌅",
+    "Chào ngày mới! ☀️",
+    "Oki cố lên! 💪",
+    "Chiến thôi cậu ơi! 🚀",
+    "Tớ sẵn sàng rồi! 🙆",
+    "Năng lượng tràn trề! 🔋",
+    "Chào buổi sáng nha! 🌻",
+    "Đồng hành cùng tớ nhé! 🤝"
+];
+
+const BUTTON_TEXTS_NOON = [
+    "Mát mẻ nha! 🌬️",
+    "Ăn trưa ngon miệng! 🍛",
+    "Oki oki! 👌",
+    "Tớ nhớ uống nước! 🥤",
+    "Nhớ rồi nha! 😉",
+    "Tránh nắng thôi! 🌤️",
+    "Làm việc thong thả! 🧘"
+];
+
+const BUTTON_TEXTS_AFTERNOON = [
+    "Chiều mát mẻ! 🍃",
+    "Năng suất nha! 🎯",
+    "Cố lên tớ ơi! 🚀",
+    "Oki oki! ✌️",
+    "Chiến ca chiều! 💪",
+    "Tớ sẽ làm thật tốt! 💎",
+    "Tuyệt vời ông mặt trời! ☀️"
+];
+
+const BUTTON_TEXTS_EVENING = [
+    "Phố lên đèn thôi! 🌙",
+    "Tỉnh táo làm việc! 🧠",
+    "Ấm áp ghê! 🥰",
+    "Vào ca tối thôi! 🌌",
+    "Giữ sức khỏe nha! 🍀",
+    "Cố nốt tối nay! 🔋",
+    "Oki cậu luôn ❤️"
+];
+
+const BUTTON_TEXTS_SUMMARY = [
+    "Về nhà thôi! 🏡",
+    "Nghỉ ngơi xả láng! 🛌",
+    "Tắm nước ấm thôi! 🛀",
+    "Ăn món gì ngon ngon! 🍲",
+    "Cảm ơn cậu nhiều! 💖",
+    "Hẹn gặp lại ca sau! 👋",
+    "Hôm nay cậu vất vả rồi! 🫂"
 ];
 
 const BUTTON_TEXTS = [
@@ -336,7 +334,7 @@ function loadData() {
         const settings = localStorage.getItem(STORAGE_KEYS.SETTINGS);
         const hasPermission = ("Notification" in window) && Notification.permission === "granted";
         state.settings = settings ? JSON.parse(settings) : { hourlyRate: 18000, notificationsEnabled: hasPermission };
-        
+
         if (state.settings.notificationsEnabled === undefined) {
             state.settings.notificationsEnabled = hasPermission;
         }
@@ -374,7 +372,7 @@ function loadData() {
         state.records = [];
         state.purchases = [];
         state.ticks = [];
-        state.settings = { 
+        state.settings = {
             hourlyRate: 18000,
             bonusTypes: [
                 { id: 'go', name: 'GO', amount: 12000, emoji: '🏬' },
@@ -456,16 +454,16 @@ function navigateTo(pageName) {
 function isTimeWithinShift(startStr, endStr) {
     const now = new Date();
     const currentMins = now.getHours() * 60 + now.getMinutes();
-    
+
     const [sh, sm] = startStr.split(':').map(Number);
     const [eh, em] = endStr.split(':').map(Number);
-    
+
     let startMins = sh * 60 + sm;
     let endMins = eh * 60 + em;
-    
+
     // Cho phép vào ca sớm tối đa 30 phút
     let allowedStartMins = (startMins - 30 + 1440) % 1440;
-    
+
     if (endMins > startMins) {
         // Ca không qua đêm (ví dụ: 08:00 -> 17:00)
         return currentMins >= allowedStartMins && currentMins <= endMins;
@@ -509,7 +507,7 @@ function clockIn() {
     };
 
     saveData(STORAGE_KEYS.CURRENT, state.currentSession);
-    
+
     startTimer();
     updateHomeUI();
     showToast('Đã vào ca thành công!', 'success');
@@ -554,7 +552,7 @@ function clockOut() {
     }
 
     const durationHours = durationMs / (1000 * 60 * 60);
-    
+
     // Meal allowance calculation
     let mealAllowance = 0;
     if (durationHours >= 16) {
@@ -562,7 +560,7 @@ function clockOut() {
     } else if (durationHours >= 8) {
         mealAllowance = 20000;
     }
-    
+
     const baseEarnings = Math.round(durationHours * state.currentSession.hourlyRate);
     const earnings = baseEarnings + mealAllowance;
 
@@ -655,7 +653,7 @@ function updateTimerDisplay() {
     let percent = 0;
     let progressLabelText = 'Ca làm tự do';
     const shift = state.shifts.find(s => s.id === state.currentSession.shiftId);
-    
+
     if (shift && !shift.isFreestyle && shift.end) {
         const endDate = getShiftEndDate(state.currentSession);
         if (endDate) {
@@ -663,7 +661,7 @@ function updateTimerDisplay() {
             if (totalDuration > 0) {
                 percent = (elapsed / totalDuration) * 100;
                 percent = Math.max(0, Math.min(100, percent));
-                
+
                 const timeLeftMs = endDate - now;
                 if (timeLeftMs > 0) {
                     const leftHours = Math.floor(timeLeftMs / 3600000);
@@ -679,7 +677,7 @@ function updateTimerDisplay() {
         const targetMs = 8 * 60 * 60 * 1000;
         percent = (elapsed / targetMs) * 100;
         percent = Math.max(0, Math.min(100, percent));
-        
+
         if (elapsed < targetMs) {
             const leftMs = targetMs - elapsed;
             const leftHours = Math.floor(leftMs / 3600000);
@@ -689,32 +687,17 @@ function updateTimerDisplay() {
             progressLabelText = 'Đã đạt mục tiêu 8h';
         }
     }
-    
+
     const progressBar = document.getElementById('shiftProgressBar');
     const progressPercent = document.getElementById('progressPercent');
     const progressText = document.getElementById('progressText');
-    
+
     if (progressBar) progressBar.style.width = `${percent}%`;
     if (progressPercent) progressPercent.textContent = `${Math.round(percent)}%`;
     if (progressText) progressText.textContent = progressLabelText;
 
 
 
-    // 30-minute reminder before shift ends (only for fixed shifts)
-    const endDate = getShiftEndDate(state.currentSession);
-    if (endDate && state.settings.notificationsEnabled && !state.currentSession.notified30Mins) {
-        const timeLeftMs = endDate - now;
-        if (timeLeftMs > 0 && timeLeftMs <= 30 * 60 * 1000) {
-            state.currentSession.notified30Mins = true;
-            saveData(STORAGE_KEYS.CURRENT, state.currentSession);
-            const msg = getRandomItem(WARNING_MESSAGES);
-            sendBrowserNotification(
-                `⚠️ Sắp hoàn thành ca rồi, cố lên! 😭`,
-                msg,
-                `shift-warning`
-            );
-        }
-    }
 }
 
 // ===== HOME UI =====
@@ -734,7 +717,7 @@ function updateHomeUI() {
         statusText.textContent = `Đang làm — ${state.currentSession.shiftName}`;
         currentShiftInfo.style.display = 'flex';
         if (progressContainer) progressContainer.style.display = 'block';
-        
+
         btnClockIn.disabled = true;
         btnClockOut.disabled = false;
         if (btnChangeShift) btnChangeShift.style.display = 'none';
@@ -744,7 +727,7 @@ function updateHomeUI() {
         statusText.textContent = 'Chưa vào ca';
         currentShiftInfo.style.display = 'none';
         if (progressContainer) progressContainer.style.display = 'none';
-        
+
         btnClockIn.disabled = false;
         btnClockOut.disabled = true;
         if (btnChangeShift) btnChangeShift.style.display = 'block';
@@ -787,9 +770,9 @@ function updateSettingsUI() {
     const input = document.getElementById('hourlyRateInput');
     const saveBtn = document.querySelector('#page-settings button[onclick="saveRate()"]');
     const presets = document.querySelectorAll('#page-settings .preset-btn');
-    
+
     const isDisabled = state.currentSession !== null;
-    
+
     if (input) input.disabled = isDisabled;
     if (saveBtn) saveBtn.disabled = isDisabled;
     presets.forEach(btn => btn.disabled = isDisabled);
@@ -813,7 +796,7 @@ function renderShifts() {
     const currentTotalMins = currentHours * 60 + currentMinutes;
 
     let displayShifts = [...state.shifts];
-    
+
     // Always add Freestyle Shift at the beginning
     const freestyleShift = { id: 'freestyle', name: 'Ca Tự Do', emoji: '⏱️', isFreestyle: true };
     displayShifts.unshift(freestyleShift);
@@ -832,7 +815,7 @@ function renderShifts() {
         const timeDisplay = shift.isFreestyle ? 'Tự do' : `${shift.start} — ${shift.end}`;
 
         return `
-            <div class="shift-card ${isSelected ? 'selected' : ''}" onclick="selectShift('${shift.id}', ${shift.isFreestyle})">
+            <div id="shift-card-${shift.id}" class="shift-card ${isSelected ? 'selected' : ''}" onclick="selectShift('${shift.id}', ${shift.isFreestyle})">
                 <div class="shift-card-emoji" style="background: ${getShiftBg(shift.id)}">${shift.emoji}</div>
                 <div class="shift-card-info">
                     <div class="shift-card-name">${shift.name}</div>
@@ -857,7 +840,7 @@ function selectShift(shiftId, isFreestyle = false) {
     } else {
         shift = state.shifts.find(s => s.id === shiftId);
     }
-    
+
     if (!shift) return;
 
     state.selectedShift = shift;
@@ -976,29 +959,29 @@ function renderHistory() {
     const card1 = document.querySelector('.history-summary .summary-card:nth-child(1)');
     const card2 = document.querySelector('.history-summary .summary-card:nth-child(2)');
     const card3 = document.querySelector('.history-summary .summary-card:nth-child(3)');
-    
+
     const { startDate, endDate } = getHistoryFilterDates();
     const periodRecords = state.records.filter(r => {
         const d = new Date(r.startTime);
         return d >= startDate && d <= endDate;
     });
-    
+
     const totalHours = periodRecords.reduce((sum, r) => sum + r.durationHours, 0);
     const shiftEarnings = periodRecords.reduce((sum, r) => sum + r.earnings, 0);
-    
+
     const periodPurchases = state.purchases.filter(p => {
         const d = new Date(p.date);
         return d >= startDate && d <= endDate;
     });
     const purchaseTotal = periodPurchases.reduce((sum, p) => sum + p.amount, 0);
-    
+
     const milestones = getTickMilestones();
     const periodMilestones = milestones.filter(m => {
         const d = new Date(m.date);
         return d >= startDate && d <= endDate;
     });
     const milestoneTotal = periodMilestones.reduce((sum, m) => sum + m.amount, 0);
-    
+
     const periodTicks = state.ticks.filter(t => {
         const d = new Date(t.date);
         return d >= startDate && d <= endDate;
@@ -1008,11 +991,11 @@ function renderHistory() {
         const icon1 = card1.querySelector('.summary-icon');
         const val1 = card1.querySelector('.summary-value');
         const lbl1 = card1.querySelector('.summary-label');
-        
+
         const icon2 = card2.querySelector('.summary-icon');
         const val2 = card2.querySelector('.summary-value');
         const lbl2 = card2.querySelector('.summary-label');
-        
+
         const icon3 = card3.querySelector('.summary-icon');
         const val3 = card3.querySelector('.summary-value');
         const lbl3 = card3.querySelector('.summary-label');
@@ -1021,11 +1004,11 @@ function renderHistory() {
             icon1.textContent = '📅';
             lbl1.textContent = 'Số ca';
             val1.textContent = periodRecords.length;
-            
+
             icon2.textContent = '⏱️';
             lbl2.textContent = 'Tổng giờ';
             val2.textContent = `${totalHours.toFixed(1)}h`;
-            
+
             icon3.textContent = '💵';
             lbl3.textContent = 'Thu nhập';
             val3.textContent = formatCurrencyShort(shiftEarnings + purchaseTotal + milestoneTotal);
@@ -1033,11 +1016,11 @@ function renderHistory() {
             icon1.textContent = '📅';
             lbl1.textContent = 'Số ca';
             val1.textContent = periodRecords.length;
-            
+
             icon2.textContent = '⏱️';
             lbl2.textContent = 'Tổng giờ';
             val2.textContent = `${totalHours.toFixed(1)}h`;
-            
+
             icon3.textContent = '💵';
             lbl3.textContent = 'Lương ca';
             val3.textContent = formatCurrencyShort(shiftEarnings);
@@ -1045,11 +1028,11 @@ function renderHistory() {
             icon1.textContent = '🎁';
             lbl1.textContent = 'Lần nhận';
             val1.textContent = periodPurchases.length + periodMilestones.length;
-            
+
             icon2.textContent = '⭐';
             lbl2.textContent = 'Thưởng tick';
             val2.textContent = formatCurrencyShort(milestoneTotal);
-            
+
             icon3.textContent = '💵';
             lbl3.textContent = 'Tiền thưởng';
             val3.textContent = formatCurrencyShort(purchaseTotal + milestoneTotal);
@@ -1057,11 +1040,11 @@ function renderHistory() {
             icon1.textContent = '👍';
             lbl1.textContent = 'Tick Tốt';
             val1.textContent = periodTicks.filter(t => t.type === 'good').length;
-            
+
             icon2.textContent = '👎';
             lbl2.textContent = 'Tick Xấu';
             val2.textContent = periodTicks.filter(t => t.type === 'bad').length;
-            
+
             icon3.textContent = '📊';
             lbl3.textContent = 'Tổng thưởng';
             val3.textContent = (milestoneTotal >= 0 ? '+' : '') + formatCurrencyShort(milestoneTotal);
@@ -1082,11 +1065,11 @@ function renderHistory() {
     // Group items by date string
     const grouped = [];
     let currentDate = '';
-    
+
     items.forEach(item => {
         const d = item.dateObj;
-        const dateKey = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
-        
+        const dateKey = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+
         if (currentDate !== dateKey) {
             grouped.push({
                 dateKey: dateKey,
@@ -1114,7 +1097,7 @@ function renderHistory() {
                 const durationStr = formatDurationShort(record.durationMs);
                 const mealAllowance = getRecordMealAllowance(record);
                 const mealBadge = mealAllowance > 0 ? `<span class="history-meal-badge" style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.65rem; background: rgba(34, 197, 94, 0.12); color: var(--accent-green); border: 1px solid rgba(34, 197, 94, 0.2); padding: 2px 6px; border-radius: 6px;">🍴 +${formatCurrencyShort(mealAllowance)} ăn</span>` : '';
-                
+
                 let manualBadge = '';
                 if (record.isManual) {
                     const isFuture = new Date(record.startTime) > new Date(record.createdAt || Number(record.id.replace('manual-', '')) || Date.now());
@@ -1133,7 +1116,7 @@ function renderHistory() {
                 ` : '';
 
                 return `
-                    <div class="history-item" style="animation-delay: ${Math.min((gIndex*0.1) + index * 0.05, 0.5)}s; margin-bottom: 8px;">
+                    <div class="history-item" style="animation-delay: ${Math.min((gIndex * 0.1) + index * 0.05, 0.5)}s; margin-bottom: 8px;">
                         <div class="history-info" style="margin-left: 0; display: flex; gap: 10px; align-items: flex-start; flex: 1; min-width: 0;">
                             <div style="font-size: 1.2rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: 8px; flex-shrink: 0; margin-top: 1px;">
                                 ${record.shiftEmoji || '📋'}
@@ -1159,7 +1142,7 @@ function renderHistory() {
                 const bonus = item.data;
                 const bonusType = state.settings.bonusTypes.find(b => b.id === bonus.typeId) || { name: bonus.store, emoji: bonus.store === 'GO' ? '🏬' : '🍞' };
                 return `
-                    <div class="history-item" style="animation-delay: ${Math.min((gIndex*0.1) + index * 0.05, 0.5)}s; margin-bottom: 8px;">
+                    <div class="history-item" style="animation-delay: ${Math.min((gIndex * 0.1) + index * 0.05, 0.5)}s; margin-bottom: 8px;">
                         <div class="history-info" style="margin-left: 0; display: flex; gap: 10px; align-items: flex-start; flex: 1; min-width: 0;">
                             <div style="font-size: 1.2rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: 8px; flex-shrink: 0; margin-top: 1px;">
                                 ${bonusType.emoji}
@@ -1184,7 +1167,7 @@ function renderHistory() {
                 const milestone = item.data;
                 const isPositive = milestone.amount >= 0;
                 return `
-                    <div class="history-item" style="animation-delay: ${Math.min((gIndex*0.1) + index * 0.05, 0.5)}s; margin-bottom: 8px;">
+                    <div class="history-item" style="animation-delay: ${Math.min((gIndex * 0.1) + index * 0.05, 0.5)}s; margin-bottom: 8px;">
                         <div class="history-info" style="margin-left: 0; display: flex; gap: 10px; align-items: flex-start; flex: 1; min-width: 0;">
                             <div style="font-size: 1.2rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: 8px; flex-shrink: 0; margin-top: 1px;">
                                 ${milestone.emoji}
@@ -1207,7 +1190,7 @@ function renderHistory() {
                 const tick = item.data;
                 const isGood = tick.type === 'good';
                 return `
-                    <div class="history-item" style="animation-delay: ${Math.min((gIndex*0.1) + index * 0.05, 0.5)}s; margin-bottom: 8px;">
+                    <div class="history-item" style="animation-delay: ${Math.min((gIndex * 0.1) + index * 0.05, 0.5)}s; margin-bottom: 8px;">
                         <div class="history-info" style="margin-left: 0; display: flex; gap: 10px; align-items: flex-start; flex: 1; min-width: 0;">
                             <div style="font-size: 1.2rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: 8px; flex-shrink: 0; margin-top: 1px;">
                                 ${isGood ? '👍' : '👎'}
@@ -1272,7 +1255,7 @@ function getFilteredHistoryItems() {
                 items.push({ itemType: 'bonus', dateObj: d, data: p });
             }
         });
-        
+
         // Add tick milestones to history under bonus/all
         const milestones = getTickMilestones();
         milestones.forEach(m => {
@@ -1348,10 +1331,10 @@ function updateStats() {
     const periodStart = getPeriodStartDate(state.statsPeriod);
     const periodPurchases = state.purchases.filter(p => new Date(p.date) >= periodStart);
     const periodTicks = state.ticks.filter(t => new Date(t.date) >= periodStart);
-    
+
     const tickMilestones = getTickMilestones();
     const periodMilestones = tickMilestones.filter(m => new Date(m.date) >= periodStart);
-    
+
     const purchaseTotal = periodPurchases.reduce((sum, p) => sum + p.amount, 0);
     const tickNet = periodMilestones.reduce((sum, m) => sum + m.amount, 0);
     const grandTotal = totalEarnings + purchaseTotal + tickNet;
@@ -1361,7 +1344,7 @@ function updateStats() {
     document.getElementById('statsTotalHours').textContent = `${totalHours.toFixed(1)}h`;
     document.getElementById('statsTotalShifts').textContent = `${totalShifts} ca`;
     document.getElementById('statsPurchaseTotal').textContent = formatCurrencyShort(purchaseTotal);
-    
+
     const tickNetEl = document.getElementById('statsTickNet');
     if (tickNetEl) {
         tickNetEl.textContent = (tickNet >= 0 ? '+' : '') + formatCurrencyShort(tickNet);
@@ -1582,7 +1565,7 @@ function renderBreakdown(records, purchases, ticks, tickMilestones) {
         daily[key].hours += r.durationHours;
         daily[key].shifts++;
         daily[key].mealAllowance += getRecordMealAllowance(r);
-        
+
         // Save shift details (times & badges)
         const startStr = formatTime(new Date(r.startTime));
         const endStr = formatTime(new Date(r.endTime));
@@ -1607,7 +1590,7 @@ function renderBreakdown(records, purchases, ticks, tickMilestones) {
             const key = d.toLocaleDateString('vi-VN');
             initDay(key, d);
             daily[key].bonusEarnings += p.amount;
-            
+
             // Find bonus type name/emoji
             const bType = state.settings.bonusTypes?.find(b => b.id === p.typeId) || { emoji: '🎁', name: p.store };
             daily[key].bonuses.push({
@@ -1674,10 +1657,10 @@ function renderBreakdown(records, purchases, ticks, tickMilestones) {
             tagsHtml += `<span class="breakdown-bonus-badge" style="padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; background: rgba(34, 197, 94, 0.12); color: var(--accent-green); border: 1px solid rgba(34, 197, 94, 0.2); display: inline-flex; align-items: center; gap: 4px; margin-right: 4px; margin-bottom: 4px;">🍴 Trợ cấp ăn (+${formatCurrencyShort(entry.mealAllowance)})</span>`;
         }
         if (entry.bonuses.length > 0 || entry.ticks.length > 0) {
-            tagsHtml += entry.bonuses.map(b => 
+            tagsHtml += entry.bonuses.map(b =>
                 `<span class="breakdown-bonus-badge" style="padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; background: ${b.amount >= 0 ? 'rgba(6, 182, 212, 0.12)' : 'rgba(239, 68, 68, 0.12)'}; color: ${b.amount >= 0 ? 'var(--accent-cyan)' : 'var(--accent-red)'}; border: 1px solid ${b.amount >= 0 ? 'rgba(6, 182, 212, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; display: inline-flex; align-items: center; gap: 4px; margin-right: 4px; margin-bottom: 4px;">${b.emoji} ${b.name} (${b.amount >= 0 ? '+' : ''}${formatCurrencyShort(b.amount)})</span>`
             ).join('');
-            
+
             tagsHtml += entry.ticks.map(t =>
                 `<span class="breakdown-tick-badge" style="padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; background: ${t.type === 'good' ? 'rgba(34, 197, 94, 0.12)' : 'rgba(239, 68, 68, 0.12)'}; color: ${t.type === 'good' ? 'var(--accent-green)' : 'var(--accent-red)'}; border: 1px solid ${t.type === 'good' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; display: inline-flex; align-items: center; gap: 4px; margin-right: 4px; margin-bottom: 4px;">${t.type === 'good' ? '👍' : '👎'} Tick ${t.type === 'good' ? 'tốt' : 'xấu'}${t.note ? `: ${t.note}` : ''}</span>`
             ).join('');
@@ -1690,15 +1673,15 @@ function renderBreakdown(records, purchases, ticks, tickMilestones) {
             shiftTimesHtml = `
                 <div class="breakdown-shifts-list" style="display:flex; flex-direction:column; gap:4px; margin-bottom:4px; padding-left:2px; font-size:0.75rem; color:var(--text-secondary);">
                     ${entry.shiftDetails.map(sd => {
-                        let badgeHtml = '';
-                        if (sd.typeText) {
-                            const isFuture = sd.typeText.includes('trước');
-                            const badgeStyle = isFuture 
-                                ? 'background: rgba(139, 92, 246, 0.12); color: var(--accent-purple); border: 1px solid rgba(139, 92, 246, 0.2);'
-                                : 'background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2);';
-                            badgeHtml = `<span style="padding: 1px 4px; border-radius: 4px; font-size: 0.6rem; margin-left: 4px; ${badgeStyle}">${sd.typeText}</span>`;
-                        }
-                        return `
+                let badgeHtml = '';
+                if (sd.typeText) {
+                    const isFuture = sd.typeText.includes('trước');
+                    const badgeStyle = isFuture
+                        ? 'background: rgba(139, 92, 246, 0.12); color: var(--accent-purple); border: 1px solid rgba(139, 92, 246, 0.2);'
+                        : 'background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2);';
+                    badgeHtml = `<span style="padding: 1px 4px; border-radius: 4px; font-size: 0.6rem; margin-left: 4px; ${badgeStyle}">${sd.typeText}</span>`;
+                }
+                return `
                             <div style="display:flex; align-items:center; gap:6px;">
                                 <span>${sd.emoji}</span>
                                 <span style="font-weight:500; color:var(--text-primary);">${sd.name}</span>
@@ -1706,7 +1689,7 @@ function renderBreakdown(records, purchases, ticks, tickMilestones) {
                                 ${badgeHtml}
                             </div>
                         `;
-                    }).join('')}
+            }).join('')}
                 </div>
             `;
         }
@@ -1807,7 +1790,7 @@ function openAddBonusModal() {
                     id: 'bonus-' + Date.now(),
                     name, amount, emoji
                 });
-                
+
                 saveData(STORAGE_KEYS.SETTINGS, state.settings);
                 renderBonusSettings();
                 updateBonusUI(); // Update home page buttons
@@ -1841,12 +1824,12 @@ function confirmClearData() {
                     state.records = [];
                     state.purchases = [];
                     state.ticks = [];
-                    state.settings = { 
+                    state.settings = {
                         hourlyRate: 18000,
                         bonusTypes: [
                             { id: 'go', name: 'GO', amount: 12000, emoji: '🏬' },
                             { id: 'chb', name: 'CHB', amount: 8000, emoji: '🍞' }
-                        ] 
+                        ]
                     };
                     state.currentSession = null;
                     state.selectedShift = null;
@@ -1894,15 +1877,19 @@ function showInputModal(title, placeholder, onConfirm) {
             <input type="text" id="genericInputModal" class="form-input" placeholder="${placeholder}" autofocus>
         </div>
     `, [
-        { text: 'Bỏ qua', class: 'modal-btn-cancel', action: () => {
-            onConfirm('');
-            closeModal();
-        }},
-        { text: 'Xác nhận', class: 'modal-btn-confirm', action: () => {
-            const val = document.getElementById('genericInputModal').value.trim();
-            onConfirm(val);
-            closeModal();
-        }}
+        {
+            text: 'Bỏ qua', class: 'modal-btn-cancel', action: () => {
+                onConfirm('');
+                closeModal();
+            }
+        },
+        {
+            text: 'Xác nhận', class: 'modal-btn-confirm', action: () => {
+                const val = document.getElementById('genericInputModal').value.trim();
+                onConfirm(val);
+                closeModal();
+            }
+        }
     ]);
 }
 
@@ -2203,7 +2190,7 @@ function getTickMilestones() {
     let goodCount = 0;
     let badCount = 0;
     const milestones = [];
-    
+
     sorted.forEach(t => {
         if (t.type === 'good') {
             goodCount++;
@@ -2489,7 +2476,7 @@ function saveManualClock() {
     renderHistory();
     updateStats();
     closeModal();
-    
+
     const isFuture = startD > new Date();
     const typeLabel = isFuture ? 'Chấm công trước' : 'Chấm công bù';
     showToast(`✓ Đã thêm ca (${typeLabel}): ${formatCurrency(earnings)}`, 'success');
@@ -2519,7 +2506,7 @@ function toggleNotifications() {
                 state.settings.notificationsEnabled = true;
                 saveData(STORAGE_KEYS.SETTINGS, state.settings);
                 showToast('🔔 Đã bật thông báo đẩy thành công!', 'success');
-                
+
                 sendBrowserNotification(
                     "TimeKeeper",
                     "Ứng dụng sẽ gửi thông báo nhắc nhở và tiến trình ca làm việc cho bạn khi bạn vào ca."
@@ -2544,8 +2531,24 @@ const NOTIFICATION_BADGE = 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.
 function sendBrowserNotification(title, body, tag = null, silent = false) {
     if (!state.settings.notificationsEnabled) return;
     if (!("Notification" in window)) return;
-    
-    const cuteBtnText = getRandomItem(BUTTON_TEXTS);
+
+    let cuteBtnText;
+    if (tag === 'shift-welcome') {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 11) {
+            cuteBtnText = getRandomItem(BUTTON_TEXTS_MORNING);
+        } else if (hour >= 11 && hour < 14) {
+            cuteBtnText = getRandomItem(BUTTON_TEXTS_NOON);
+        } else if (hour >= 14 && hour < 18) {
+            cuteBtnText = getRandomItem(BUTTON_TEXTS_AFTERNOON);
+        } else {
+            cuteBtnText = getRandomItem(BUTTON_TEXTS_EVENING);
+        }
+    } else if (tag === 'shift-summary') {
+        cuteBtnText = getRandomItem(BUTTON_TEXTS_SUMMARY);
+    } else {
+        cuteBtnText = getRandomItem(BUTTON_TEXTS);
+    }
 
     const options = {
         body: body,
@@ -2554,14 +2557,14 @@ function sendBrowserNotification(title, body, tag = null, silent = false) {
         silent: silent,
         tag: tag || undefined,
         renotify: (tag === 'shift-progress') ? false : ((tag && !silent) ? true : false),
-        requireInteraction: (tag === 'shift-progress' || tag === 'shift-warning' || tag === 'shift-summary') ? true : false,
+        requireInteraction: (tag === 'shift-progress' || tag === 'shift-summary') ? true : false,
     };
 
     if (!silent) {
         options.vibrate = [300, 110, 300];
     }
 
-    if (tag === 'shift-welcome' || tag === 'shift-warning' || tag === 'shift-summary') {
+    if (tag === 'shift-welcome' || tag === 'shift-summary') {
         options.actions = [
             {
                 action: 'close',
@@ -2625,17 +2628,17 @@ function sendBrowserNotification(title, body, tag = null, silent = false) {
 function getShiftEndDate(session) {
     const shift = state.shifts.find(s => s.id === session.shiftId);
     if (!shift || shift.isFreestyle || !shift.end) return null;
-    
+
     const startDate = new Date(session.startTime);
     const [endH, endM] = shift.end.split(':').map(Number);
     const [startH, startM] = shift.start.split(':').map(Number);
-    
+
     const endDate = new Date(startDate);
     endDate.setHours(endH, endM, 0, 0);
-    
+
     const startMins = startH * 60 + startM;
     const endMins = endH * 60 + endM;
-    
+
     if (endMins < startMins) {
         // Crosses midnight
         if (startDate.getHours() >= startH - 1) {

@@ -150,7 +150,7 @@
 
                     <!-- Manual Clock Button -->
                     <div class="manual-clock-container" style="margin-top: 12px; display: flex; width: 100%;">
-                        <button class="btn-outline-dashed" onclick="openManualClockModal()"
+                        <button id="btnManualClock" class="btn-outline-dashed" onclick="openManualClockModal()"
                             style="width: 100%; padding: 14px; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 8px;">
                             <span>✍️ Chấm Công Thủ Công</span>
                         </button>
@@ -487,7 +487,7 @@
 
         <!-- Bottom Navigation -->
         <nav class="bottom-nav" id="bottomNav">
-            <button class="nav-item active" data-page="home" onclick="navigateTo('home')">
+            <button id="nav-home" class="nav-item active" data-page="home" onclick="navigateTo('home')">
                 <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8" />
                     <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="1.8"
@@ -495,7 +495,7 @@
                 </svg>
                 <span>Chấm công</span>
             </button>
-            <button class="nav-item" data-page="shifts" onclick="navigateTo('shifts')">
+            <button id="nav-shifts" class="nav-item" data-page="shifts" onclick="navigateTo('shifts')">
                 <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8" />
                     <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="1.8"
@@ -505,7 +505,7 @@
                 </svg>
                 <span>Ca làm</span>
             </button>
-            <button class="nav-item" data-page="history" onclick="navigateTo('history')">
+            <button id="nav-history" class="nav-item" data-page="history" onclick="navigateTo('history')">
                 <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path d="M12 8v4l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
                     <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5" stroke="currentColor" stroke-width="1.8"
@@ -513,13 +513,13 @@
                 </svg>
                 <span>Lịch sử</span>
             </button>
-            <button class="nav-item" data-page="stats" onclick="navigateTo('stats')">
+            <button id="nav-stats" class="nav-item" data-page="stats" onclick="navigateTo('stats')">
                 <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path d="M18 20V10M12 20V4M6 20v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                 </svg>
                 <span>Thống kê</span>
             </button>
-            <button class="nav-item" data-page="settings" onclick="navigateTo('settings')">
+            <button id="nav-settings" class="nav-item" data-page="settings" onclick="navigateTo('settings')">
                 <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
                     <path
